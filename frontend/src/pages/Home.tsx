@@ -1,0 +1,268 @@
+import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { motion } from "motion/react";
+import {
+  Activity,
+  ArrowUpRight,
+  BarChart3,
+  Calculator,
+  ChevronRight,
+  CircleHelp,
+  CloudSun,
+  Droplets,
+  ExternalLink,
+  Leaf,
+  MapPin,
+  Menu,
+  Navigation,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  ThermometerSun,
+  Trees,
+  Users,
+  Waves,
+  X,
+  Zap,
+} from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { apiGet, apiPost } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+type RiskTier = "low" | "moderate" | "high" | "very_high";
+
+interface CityRisk {
+  id: string;
+  name: string;
+  state: string;
+  lat: number;
+  lng: number;
+  max_temp: number;
+  heatwave_days: number;
+  pop_exposure: number;
+  urbanization: number;
+  vegetation_cover: number;
+  score: number;
+  tier: RiskTier;
+  is_demo: boolean;
+}
+
+interface TrendPoint {
+  year: string;
+  frequency: number;
+  day_temperature: number;
+  night_temperature: number;
+}
+
+interface RiskCalculationRequest {
+  max_temp: number;
+  heatwave_days: number;
+  pop_exposure: number;
+  urbanization: number;
+  vegetation_cover: number;
+}
+
+interface RiskCalculationResponse {
+  score: number;
+  tier: RiskTier;
+  components: Record<string, number>;
+  formula: string;
+}
+
+const tierMeta: Record<RiskTier, { label: string; color: string; bg: string; border: string }> = {
+  low: { label: "Low Risk", color: "#10B981", bg: "rgba(16,185,129,.14)", border: "rgba(16,185,129,.35)" },
+  moderate: { label: "Moderate Risk", color: "#F59E0B", bg: "rgba(245,158,11,.14)", border: "rgba(245,158,11,.35)" },
+  high: { label: "High Risk", color: "#F97316", bg: "rgba(249,115,22,.14)", border: "rgba(249,115,22,.35)" },
+  very_high: { label: "Very High Risk", color: "#EF4444", bg: "rgba(239,68,68,.16)", border: "rgba(239,68,68,.4)" },
+};
+
+const navItems = [
+  ["map", "Map"], ["dashboard", "Dashboard"], ["compare", "Compare"], ["trends", "Trends"],
+  ["calculator", "Calculator"], ["safety", "Safety"], ["methodology", "Methodology"], ["sources", "Sources"],
+];
+
+const fetchCities = () => apiGet<CityRisk[]>("/heatmap/cities");
+const fetchTrends = () => apiGet<TrendPoint[]>("/heatmap/trends");
+
+function RiskBadge({ tier, compact = false }: { tier: RiskTier; compact?: boolean }) {
+  const meta = tierMeta[tier];
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[.12em] ${compact ? "px-2 py-0.5 text-[9px]" : ""}`}
+      style={{ color: meta.color, backgroundColor: meta.bg, borderColor: meta.border }}
+      data-testid={`risk-badge-${tier}`}
+    >
+      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: meta.color }} />{meta.label}
+    </span>
+  );
+}
+
+function SectionHeading({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: ReactNode }) {
+  return (
+    <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div>
+        <p className="eyebrow" data-testid={`section-eyebrow-${eyebrow.toLowerCase().replaceAll(" ", "-")}`}>{eyebrow}</p>
+        <h2 className="mt-2 font-heading text-2xl font-bold tracking-tight text-white sm:text-3xl" data-testid={`section-title-${title.toLowerCase().replaceAll(" ", "-")}`}>{title}</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400" data-testid={`section-description-${eyebrow.toLowerCase().replaceAll(" ", "-")}`}>{description}</p>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function MetricBar({ label, value, display, color = "#F97316" }: { label: string; value: number; display: string; color?: string }) {
+  return (
+    <div className="space-y-2" data-testid={`metric-${label.toLowerCase().replaceAll(" ", "-")}`}>
+      <div className="flex items-center justify-between text-xs"><span className="text-slate-400">{label}</span><span className="font-mono text-slate-200">{display}</span></div>
+      <div className="h-1.5 overflow-hidden rounded-full bg-white/[.07]"><motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(value, 100)}%` }} className="h-full rounded-full" style={{ backgroundColor: color }} /></div>
+    </div>
+  );
+}
+
+export default function Home() {
+  const citiesQuery = useQuery({ queryKey: ["heatmap-cities"], queryFn: fetchCities, retry: false });
+  const trendsQuery = useQuery({ queryKey: ["heatmap-trends"], queryFn: fetchTrends, retry: false });
+  const cities = citiesQuery.data ?? [];
+  const trends = trendsQuery.data ?? [];
+  const [selectedId, setSelectedId] = useState("delhi");
+  const [filter, setFilter] = useState<"all" | RiskTier>("all");
+  const [search, setSearch] = useState("");
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const [compareIds, setCompareIds] = useState(["delhi", "bengaluru", "kochi"]);
+  const [calcValues, setCalcValues] = useState<RiskCalculationRequest>({ max_temp: 44, heatwave_days: 16, pop_exposure: 75, urbanization: 78, vegetation_cover: 24 });
+
+  const selected = cities.find((city) => city.id === selectedId) ?? cities[0];
+  const filteredCities = useMemo(() => cities.filter((city) => (filter === "all" || city.tier === filter) && city.name.toLowerCase().includes(search.toLowerCase())), [cities, filter, search]);
+  const highCount = cities.filter((city) => city.tier === "high" || city.tier === "very_high").length;
+  const averageScore = cities.length ? (cities.reduce((sum, city) => sum + city.score, 0) / cities.length).toFixed(1) : "—";
+  const highest = [...cities].sort((a, b) => b.score - a.score)[0];
+  const distribution = (Object.keys(tierMeta) as RiskTier[]).map((tier) => ({ name: tierMeta[tier].label.replace(" Risk", ""), value: cities.filter((city) => city.tier === tier).length, color: tierMeta[tier].color }));
+  const ranking = [...cities].sort((a, b) => b.score - a.score).slice(0, 8);
+  const comparison = compareIds.map((id) => cities.find((city) => city.id === id)).filter((city): city is CityRisk => Boolean(city));
+  const previewScore = Math.round(((calcValues.max_temp - 30) / 18 * 100) * .3 + Math.min(100, calcValues.heatwave_days / 24 * 100) * .25 + calcValues.pop_exposure * .2 + calcValues.urbanization * .15 + (100 - calcValues.vegetation_cover) * .1);
+  const calculateMutation = useMutation({ mutationFn: (payload: RiskCalculationRequest) => apiPost<RiskCalculationResponse>("/heatmap/calculate", payload) });
+
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const selectCity = (id: string) => { setSelectedId(id); setTimeout(() => scrollTo("map"), 50); };
+  const toggleCompare = (id: string) => setCompareIds((current) => current.includes(id) ? (current.length > 2 ? current.filter((item) => item !== id) : current) : (current.length < 4 ? [...current, id] : current));
+  const mapPosition = (city: CityRisk) => ({ left: `${8 + ((city.lng - 68) / 26) * 84}%`, top: `${92 - ((city.lat - 8) / 25) * 82}%` });
+
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-[#0A0E17] text-slate-100">
+      <header className="sticky top-0 z-50 border-b border-white/[.07] bg-[#0A0E17]/85 backdrop-blur-xl" data-testid="main-navbar">
+        <div className="mx-auto flex max-w-[1480px] items-center justify-between px-5 py-3 lg:px-8">
+          <a href="#overview" className="flex items-center gap-3" data-testid="brand-home-link">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-orange-400 to-red-600 shadow-lg shadow-orange-950/30"><ThermometerSun className="h-5 w-5 text-white" /></span>
+            <span><span className="block font-heading text-sm font-bold tracking-tight text-white">HeatMap <span className="text-orange-400">India</span></span><span className="block font-mono text-[9px] uppercase tracking-[.18em] text-slate-500">EVS · CA1 PROJECT</span></span>
+          </a>
+          <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Primary navigation">
+            {navItems.map(([id, label]) => <a key={id} href={`#${id}`} className="rounded-lg px-2.5 py-2 text-[11px] font-medium text-slate-400 transition-colors hover:bg-white/[.06] hover:text-white" data-testid={`nav-link-${id}`}>{label}</a>)}
+          </nav>
+          <div className="flex items-center gap-2">
+            <span className="hidden items-center gap-1.5 rounded-full border border-orange-400/20 bg-orange-400/[.08] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-orange-300 sm:flex" data-testid="demo-data-badge"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-400" /> Demo Data</span>
+            <Button variant="outline" size="icon-sm" className="border-white/10 bg-white/[.04] text-slate-300 hover:bg-white/10 hover:text-white xl:hidden" onClick={() => setMobileMenu((open) => !open)} data-testid="mobile-menu-toggle-button" aria-label="Toggle menu">{mobileMenu ? <X /> : <Menu />}</Button>
+          </div>
+        </div>
+        {mobileMenu && <div className="border-t border-white/[.07] px-5 py-3 xl:hidden" data-testid="mobile-navigation"><div className="grid grid-cols-2 gap-1">{navItems.map(([id, label]) => <a key={id} href={`#${id}`} onClick={() => setMobileMenu(false)} className="rounded-lg px-3 py-2 text-xs text-slate-300 hover:bg-white/[.06]" data-testid={`mobile-nav-link-${id}`}>{label}</a>)}</div></div>}
+      </header>
+
+      <main>
+        <section id="overview" className="relative mx-auto max-w-[1480px] px-5 pb-16 pt-14 lg:px-8 lg:pb-24 lg:pt-24" data-testid="hero-overview-section">
+          <div className="pointer-events-none absolute -right-32 -top-40 h-[520px] w-[520px] rounded-full bg-orange-500/[.07] blur-[110px]" />
+          <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_.85fr]">
+            <div className="relative">
+              <div className="mb-6 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.24em] text-orange-400"><span className="h-px w-8 bg-orange-400" /> Digital climate intelligence</div>
+              <h1 className="max-w-4xl font-heading text-4xl font-bold leading-[1.05] tracking-[-.04em] text-white sm:text-6xl lg:text-[72px]" data-testid="hero-title">Digital Heatwave<br /><span className="text-gradient">Risk Mapping</span><br /><span className="text-slate-400">for Indian Cities</span></h1>
+              <p className="mt-7 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg" data-testid="hero-subtitle">Using digital technology to visualize and understand urban heatwave risk. An interactive Environmental Studies CA1 project for clearer climate awareness.</p>
+              <div className="mt-8 flex flex-wrap gap-3"><Button onClick={() => scrollTo("map")} className="h-11 bg-orange-500 px-5 text-sm text-white shadow-lg shadow-orange-950/30 hover:bg-orange-400" data-testid="hero-explore-map-button"><MapPin className="mr-2 h-4 w-4" /> Explore risk map <ChevronRight className="ml-1 h-4 w-4" /></Button><Button onClick={() => scrollTo("calculator")} variant="outline" className="h-11 border-white/10 bg-white/[.04] px-5 text-slate-200 hover:bg-white/10" data-testid="hero-calculator-button"><Calculator className="mr-2 h-4 w-4" /> Try the calculator</Button></div>
+              <div className="mt-12 flex flex-wrap gap-8 border-t border-white/[.08] pt-6"><div><p className="font-mono text-2xl font-bold text-white">20</p><p className="mt-1 text-[10px] uppercase tracking-widest text-slate-500">Cities monitored</p></div><div><p className="font-mono text-2xl font-bold text-orange-400">{highCount}</p><p className="mt-1 text-[10px] uppercase tracking-widest text-slate-500">Critical hotspots</p></div><div><p className="font-mono text-2xl font-bold text-white">46.8°</p><p className="mt-1 text-[10px] uppercase tracking-widest text-slate-500">Demo peak °C</p></div></div>
+            </div>
+            <div className="relative mx-auto w-full max-w-[500px] lg:ml-auto" data-testid="hero-signal-panel">
+              <div className="thermal-panel relative overflow-hidden rounded-3xl p-6 sm:p-8"><div className="absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px)", backgroundSize: "32px 32px" }} /><div className="relative"><div className="flex items-start justify-between"><div><p className="eyebrow text-orange-300">National risk signal</p><p className="mt-2 font-heading text-5xl font-bold text-white">{averageScore}<span className="text-2xl text-slate-500">/100</span></p></div><span className="rounded-xl border border-red-400/20 bg-red-400/10 p-3 text-red-300"><Activity className="h-6 w-6" /></span></div><div className="mt-8 h-32"><ResponsiveContainer width="100%" height="100%"><AreaChart data={trends}><defs><linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#F97316" stopOpacity={.5} /><stop offset="100%" stopColor="#F97316" stopOpacity={0} /></linearGradient></defs><Area type="monotone" dataKey="day_temperature" stroke="#FB923C" strokeWidth={2} fill="url(#heroFill)" dot={false} /></AreaChart></ResponsiveContainer></div><div className="flex items-center justify-between border-t border-white/[.08] pt-4 text-xs"><span className="text-slate-400">10-year temperature trend</span><span className="flex items-center gap-1.5 font-mono text-orange-300"><ArrowUpRight className="h-3.5 w-3.5" /> +2.4°C index</span></div></div></div><div className="absolute -bottom-4 -left-5 rounded-xl border border-emerald-400/20 bg-[#111827] px-4 py-3 shadow-2xl"><p className="text-[10px] uppercase tracking-widest text-slate-500">Coverage status</p><p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Ready for exploration</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="map" className="section-shell scroll-mt-20" data-testid="interactive-map-section">
+          <SectionHeading eyebrow="01 / Interactive atlas" title="India heat risk map" description="Select a city marker to inspect its educational risk profile. Filters and search update the map in real time." action={<span className="flex items-center gap-2 rounded-full border border-orange-400/20 bg-orange-400/[.07] px-3 py-2 text-[10px] uppercase tracking-wider text-orange-300"><Navigation className="h-3.5 w-3.5" /> {filteredCities.length} visible nodes</span>} />
+          <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"><div className="relative max-w-sm flex-1"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search a city..." className="h-10 w-full rounded-lg border border-white/10 bg-white/[.04] pl-10 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-orange-400/50" data-testid="city-search-input" />{search && <div className="absolute left-0 right-0 top-12 z-20 rounded-xl border border-white/10 bg-[#151d2c] p-1 shadow-2xl">{filteredCities.slice(0, 5).map((city) => <button key={city.id} onClick={() => { selectCity(city.id); setSearch(city.name); }} className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs hover:bg-white/[.07]" data-testid={`search-result-${city.id}`}><span className="text-slate-200">{city.name}</span><span className="font-mono text-slate-500">{city.score}</span></button>)}</div>}</div><div className="flex flex-wrap gap-1.5" data-testid="risk-filter-group">{(["all", "very_high", "high", "moderate", "low"] as const).map((tier) => <button key={tier} onClick={() => setFilter(tier)} className={`rounded-full border px-3 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${filter === tier ? "border-orange-400/50 bg-orange-400/15 text-orange-300" : "border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-300"}`} data-testid={`risk-filter-${tier}`}>{tier === "all" ? "All cities" : tierMeta[tier].label}</button>)}</div></div>
+          <div className="grid gap-5 xl:grid-cols-[1.65fr_1fr]">
+            <div className="map-shell relative min-h-[520px] overflow-hidden rounded-2xl border border-white/[.08] bg-[#0c1421]" data-testid="india-map-canvas">
+              <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "linear-gradient(rgba(148,163,184,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.06) 1px, transparent 1px)", backgroundSize: "48px 48px" }} /><div className="absolute left-5 top-5 z-10"><span className="rounded-md border border-white/10 bg-[#111827]/80 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-widest text-slate-500">INDIA / HEAT RISK INDEX</span></div><div className="absolute bottom-5 left-5 z-10 flex flex-wrap gap-3 rounded-lg border border-white/[.08] bg-[#111827]/80 px-3 py-2 backdrop-blur"><span className="text-[10px] text-slate-500">Legend</span>{(Object.keys(tierMeta) as RiskTier[]).map((tier) => <span key={tier} className="flex items-center gap-1.5 text-[10px] text-slate-400"><i className="h-2 w-2 rounded-full" style={{ background: tierMeta[tier].color }} />{tierMeta[tier].label.replace(" Risk", "")}</span>)}</div><svg className="absolute left-[11%] top-[10%] h-[80%] w-[78%] opacity-80" viewBox="0 0 100 100" aria-label="Stylized map outline of India"><defs><linearGradient id="mapFill" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#1a3040" /><stop offset="1" stopColor="#142131" /></linearGradient></defs><path d="M36 3 L48 7 L59 18 L73 22 L85 32 L80 43 L88 51 L78 61 L73 72 L65 75 L60 89 L53 98 L48 85 L42 78 L35 73 L30 62 L21 55 L18 46 L24 38 L25 28 L30 20 Z" fill="url(#mapFill)" stroke="#34546a" strokeWidth=".7" /><path d="M18 46 L30 43 L42 48 L51 42 L63 50 L78 43 M30 62 L43 57 L58 62 L73 55 M36 20 L42 34 L59 35 L73 22 M42 78 L52 71 L65 75" fill="none" stroke="#426276" strokeDasharray="1 2" strokeWidth=".35" /></svg>{filteredCities.map((city) => { const position = mapPosition(city); const meta = tierMeta[city.tier]; return <button key={city.id} className="city-node group absolute z-10 -translate-x-1/2 -translate-y-1/2" style={{ left: position.left, top: position.top }} onClick={() => selectCity(city.id)} data-testid={`city-marker-${city.id}`} aria-label={`Select ${city.name}`}><span className={`relative grid h-5 w-5 place-items-center rounded-full border-2 border-[#0c1421] shadow-lg transition-transform group-hover:scale-150 ${selectedId === city.id ? "scale-150" : ""}`} style={{ backgroundColor: meta.color, boxShadow: `0 0 0 4px ${meta.color}20, 0 0 20px ${meta.color}80` }}><span className="h-1.5 w-1.5 rounded-full bg-white" /></span><span className={`pointer-events-none absolute left-1/2 top-7 -translate-x-1/2 whitespace-nowrap rounded bg-[#0A0E17]/90 px-1.5 py-1 text-[9px] font-medium text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 ${selectedId === city.id ? "opacity-100" : ""}`}>{city.name}</span></button> })}</div>
+            <div className="dashboard-card flex min-h-[520px] flex-col rounded-2xl p-6" data-testid="selected-city-inspector">{selected ? <><div className="flex items-start justify-between"><div><p className="eyebrow">City risk inspector</p><h3 className="mt-2 font-heading text-2xl font-bold text-white" data-testid="selected-city-name">{selected.name}</h3><p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500"><MapPin className="h-3.5 w-3.5" />{selected.state} · {selected.lat.toFixed(2)}°N, {selected.lng.toFixed(2)}°E</p></div><RiskBadge tier={selected.tier} /></div><div className="mt-7 flex items-end justify-between border-b border-white/[.08] pb-5"><div><p className="text-[10px] uppercase tracking-widest text-slate-500">Overall risk score</p><p className="mt-1 font-mono text-5xl font-bold" style={{ color: tierMeta[selected.tier].color }} data-testid="selected-city-score">{selected.score}<span className="text-xl text-slate-600"> / 100</span></p></div><div className="text-right"><p className="font-mono text-2xl font-semibold text-white">{selected.max_temp}°C</p><p className="text-[10px] uppercase tracking-widest text-slate-500">demo max temp</p></div></div><div className="mt-6 space-y-5"><MetricBar label="Temperature signal" value={(selected.max_temp - 30) / 18 * 100} display={`${selected.max_temp}°C`} color="#EF4444" /><MetricBar label="Heatwave frequency" value={selected.heatwave_days / 24 * 100} display={`${selected.heatwave_days} days / yr`} color="#F97316" /><MetricBar label="Population exposure" value={selected.pop_exposure} display={`${selected.pop_exposure} / 100`} color="#F59E0B" /><MetricBar label="Urbanization" value={selected.urbanization} display={`${selected.urbanization}%`} color="#A78BFA" /><MetricBar label="Green cover · cooling buffer" value={selected.vegetation_cover} display={`${selected.vegetation_cover}%`} color="#10B981" /></div><div className="mt-auto flex items-start gap-2 rounded-xl border border-orange-400/15 bg-orange-400/[.06] p-3 text-xs leading-5 text-slate-400"><CircleHelp className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" /> Values shown are demonstration indicators for academic visualization, not official measurements.</div></> : <div className="grid flex-1 place-items-center text-sm text-slate-500">Loading city data…</div>}</div>
+          </div>
+        </section>
+
+        <section id="dashboard" className="section-shell scroll-mt-20" data-testid="city-risk-dashboard-section">
+          <SectionHeading eyebrow="02 / Risk dashboard" title="A national view of exposure" description="Use the snapshot to identify concentrations of risk before exploring the underlying indicators city by city." />
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><div className="kpi-card" data-testid="kpi-total-cities"><span className="kpi-icon text-sky-300"><MapPin /></span><p className="kpi-label">Cities monitored</p><p className="kpi-value">{cities.length || 20}</p><p className="kpi-note text-sky-300">Across 15 states / UTs</p></div><div className="kpi-card" data-testid="kpi-critical-cities"><span className="kpi-icon text-red-300"><Zap /></span><p className="kpi-label">High + very high</p><p className="kpi-value">{highCount || 12}</p><p className="kpi-note text-red-300">{cities.length ? Math.round(highCount / cities.length * 100) : 60}% of monitored cities</p></div><div className="kpi-card" data-testid="kpi-average-score"><span className="kpi-icon text-orange-300"><Activity /></span><p className="kpi-label">Average risk score</p><p className="kpi-value">{averageScore}</p><p className="kpi-note text-orange-300">National demo index</p></div><div className="kpi-card" data-testid="kpi-highest-city"><span className="kpi-icon text-amber-300"><ThermometerSun /></span><p className="kpi-label">Highest-risk city</p><p className="kpi-value text-2xl">{highest?.name ?? "Delhi (NCR)"}</p><p className="kpi-note text-amber-300">Score {highest?.score ?? 88} / 100</p></div></div>
+          <div className="mt-5 grid gap-5 lg:grid-cols-[1.35fr_.85fr]"><div className="dashboard-card rounded-2xl p-5 sm:p-6" data-testid="city-ranking-chart"><div className="mb-5 flex items-center justify-between"><div><p className="eyebrow">Comparative ranking</p><h3 className="mt-1 font-heading text-lg font-semibold text-white">City risk index</h3></div><Badge variant="outline" className="border-white/10 text-[10px] text-slate-400">Top 8</Badge></div><div className="h-[290px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ranking} layout="vertical" margin={{ left: 8, right: 16 }}><CartesianGrid horizontal={false} stroke="rgba(148,163,184,.1)" /><XAxis type="number" domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis type="category" dataKey="name" width={92} tick={{ fill: "#94A3B8", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,.1)", borderRadius: 10, fontSize: 11 }} cursor={{ fill: "rgba(255,255,255,.03)" }} /><Bar dataKey="score" name="Risk score" radius={[0, 4, 4, 0]}>{ranking.map((city) => <Cell key={city.id} fill={tierMeta[city.tier].color} />)}</Bar></BarChart></ResponsiveContainer></div></div><div className="dashboard-card rounded-2xl p-5 sm:p-6" data-testid="risk-distribution-chart"><div className="mb-1"><p className="eyebrow">Distribution</p><h3 className="mt-1 font-heading text-lg font-semibold text-white">Risk tier mix</h3></div><div className="relative h-[225px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={distribution} dataKey="value" nameKey="name" innerRadius={60} outerRadius={86} paddingAngle={3} stroke="none">{distribution.map((item) => <Cell key={item.name} fill={item.color} />)}</Pie><Tooltip contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,.1)", borderRadius: 10, fontSize: 11 }} /></PieChart></ResponsiveContainer><div className="pointer-events-none absolute inset-0 grid place-items-center"><div className="text-center"><p className="font-mono text-2xl font-bold text-white">{cities.length || 20}</p><p className="text-[9px] uppercase tracking-widest text-slate-500">cities</p></div></div></div><div className="grid grid-cols-2 gap-2">{distribution.map((item) => <div key={item.name} className="flex items-center justify-between text-[10px] text-slate-400" data-testid={`distribution-${item.name.toLowerCase()}`}><span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />{item.name}</span><span className="font-mono text-slate-200">{item.value}</span></div>)}</div></div></div>
+        </section>
+
+        <section id="compare" className="section-shell scroll-mt-20" data-testid="city-comparison-section">
+          <SectionHeading eyebrow="03 / Comparison engine" title="Put cities side by side" description="Choose 2–4 cities to compare their five risk dimensions. This makes the scoring framework visible, not just the final category." action={<span className="font-mono text-[10px] text-slate-500">{compareIds.length} / 4 selected</span>} />
+          <div className="mb-5 flex gap-2 overflow-x-auto pb-2" data-testid="comparison-city-selector">{cities.map((city) => <button key={city.id} onClick={() => toggleCompare(city.id)} className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition-all ${compareIds.includes(city.id) ? "border-orange-400/40 bg-orange-400/[.1]" : "border-white/[.08] bg-white/[.025] opacity-60 hover:opacity-100"}`} data-testid={`compare-toggle-${city.id}`}><span className="h-2 w-2 rounded-full" style={{ background: tierMeta[city.tier].color }} /><span className="text-[11px] text-slate-200">{city.name}</span>{compareIds.includes(city.id) && <span className="text-[10px] text-orange-300">✓</span>}</button>)}</div>
+          <div className="grid gap-5 lg:grid-cols-[1fr_1fr]"><div className="dashboard-card rounded-2xl p-5 sm:p-6" data-testid="comparison-radar-chart"><div className="mb-3 flex items-center justify-between"><div><p className="eyebrow">Five dimensions</p><h3 className="mt-1 font-heading text-lg font-semibold text-white">Vulnerability profile</h3></div><SlidersHorizontal className="h-4 w-4 text-slate-500" /></div><div className="h-[350px]"><ResponsiveContainer width="100%" height="100%"><RadarChart data={["Temperature", "Frequency", "Exposure", "Urbanization", "Green buffer"].map((metric, index) => ({ metric, ...Object.fromEntries(comparison.map((city) => [city.id, [Math.min(100, (city.max_temp - 30) / 18 * 100), city.heatwave_days / 24 * 100, city.pop_exposure, city.urbanization, city.vegetation_cover][index]])) }))} outerRadius="67%"><PolarGrid stroke="rgba(148,163,184,.15)" /><PolarAngleAxis dataKey="metric" tick={{ fill: "#94A3B8", fontSize: 10 }} /><PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} /><Tooltip contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,.1)", borderRadius: 10, fontSize: 11 }} /><Legend wrapperStyle={{ fontSize: 10, color: "#94A3B8" }} />{comparison.map((city, index) => <Radar key={city.id} name={city.name} dataKey={city.id} stroke={["#FB923C", "#38BDF8", "#34D399", "#A78BFA"][index]} fill={["#FB923C", "#38BDF8", "#34D399", "#A78BFA"][index]} fillOpacity={.12} />)}</RadarChart></ResponsiveContainer></div></div><div className="dashboard-card overflow-hidden rounded-2xl" data-testid="comparison-metrics-table"><div className="border-b border-white/[.08] p-5 sm:p-6"><p className="eyebrow">Metric delta</p><h3 className="mt-1 font-heading text-lg font-semibold text-white">Indicator matrix</h3></div><div className="overflow-x-auto"><table className="w-full min-w-[500px] text-left text-xs"><thead><tr className="border-b border-white/[.06] text-[10px] uppercase tracking-wider text-slate-500"><th className="px-5 py-3 font-medium">Indicator</th>{comparison.map((city) => <th key={city.id} className="px-3 py-3 font-medium">{city.name.split(" ")[0]}</th>)}</tr></thead><tbody>{[["Risk score", (city: CityRisk) => `${city.score}/100`], ["Max temperature", (city: CityRisk) => `${city.max_temp}°C`], ["Heatwave days", (city: CityRisk) => `${city.heatwave_days} / yr`], ["Population exposure", (city: CityRisk) => `${city.pop_exposure}%`], ["Urbanization", (city: CityRisk) => `${city.urbanization}%`], ["Green cover", (city: CityRisk) => `${city.vegetation_cover}%`]].map(([label, format]) => <tr key={label as string} className="border-b border-white/[.05] last:border-0"><td className="px-5 py-3 text-slate-400">{label as string}</td>{comparison.map((city) => <td key={city.id} className="px-3 py-3 font-mono text-slate-200">{(format as (city: CityRisk) => string)(city)}</td>)}</tr>)}<tr><td className="px-5 py-3 text-slate-400">Category</td>{comparison.map((city) => <td key={city.id} className="px-3 py-3"><RiskBadge tier={city.tier} compact /></td>)}</tr></tbody></table></div></div></div>
+        </section>
+
+        <section id="trends" className="section-shell scroll-mt-20" data-testid="heatwave-trends-section">
+          <SectionHeading eyebrow="04 / Signals over time" title="Heatwave trends & urban heat" description="A demonstration series shows how frequency and day/night temperature signals can be read together. Replace the series with verified data when available." action={<span className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-slate-500"><span className="h-2 w-2 rounded-full bg-orange-400" /> Demo series · 2015–2024</span>} />
+          <div className="grid gap-5 lg:grid-cols-[1.2fr_.8fr]"><div className="dashboard-card rounded-2xl p-5 sm:p-6" data-testid="temperature-trend-chart"><div className="mb-4 flex items-center justify-between"><div><p className="eyebrow">Thermal baseline</p><h3 className="mt-1 font-heading text-lg font-semibold text-white">Day vs night temperature</h3></div><CloudSun className="h-5 w-5 text-orange-300" /></div><div className="h-[280px]"><ResponsiveContainer width="100%" height="100%"><LineChart data={trends}><CartesianGrid stroke="rgba(148,163,184,.1)" vertical={false} /><XAxis dataKey="year" tick={{ fill: "#64748B", fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis domain={[24, 44]} tick={{ fill: "#64748B", fontSize: 10 }} axisLine={false} tickLine={false} unit="°" /><Tooltip contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,.1)", borderRadius: 10, fontSize: 11 }} /><Legend wrapperStyle={{ fontSize: 10 }} /><Line type="monotone" dataKey="day_temperature" name="Day temperature" stroke="#FB923C" strokeWidth={2.5} dot={false} /><Line type="monotone" dataKey="night_temperature" name="Night temperature" stroke="#38BDF8" strokeWidth={2.5} dot={false} /></LineChart></ResponsiveContainer></div></div><div className="dashboard-card rounded-2xl p-5 sm:p-6" data-testid="frequency-trend-chart"><div className="mb-4"><p className="eyebrow">Heatwave signal</p><h3 className="mt-1 font-heading text-lg font-semibold text-white">Frequency index</h3></div><div className="h-[280px]"><ResponsiveContainer width="100%" height="100%"><AreaChart data={trends}><defs><linearGradient id="frequencyFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#EF4444" stopOpacity={.45} /><stop offset="100%" stopColor="#EF4444" stopOpacity={0} /></linearGradient></defs><CartesianGrid stroke="rgba(148,163,184,.1)" vertical={false} /><XAxis dataKey="year" tick={{ fill: "#64748B", fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis tick={{ fill: "#64748B", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,.1)", borderRadius: 10, fontSize: 11 }} /><Area type="monotone" dataKey="frequency" name="Demo heatwave days" stroke="#EF4444" strokeWidth={2.5} fill="url(#frequencyFill)" /></AreaChart></ResponsiveContainer></div></div></div>
+          <div className="mt-5 flex flex-col gap-3 rounded-xl border border-sky-400/15 bg-sky-400/[.05] p-4 text-xs leading-5 text-slate-400 sm:flex-row sm:items-center" data-testid="trend-data-disclaimer"><Waves className="h-5 w-5 shrink-0 text-sky-300" /><span><strong className="text-sky-200">Reading the chart:</strong> This is a visual demonstration series, not a verified historical record. The interface is structured so a future researcher can replace it with IMD, ERA5, or city heat-action-plan datasets.</span></div>
+        </section>
+
+        <section id="calculator" className="section-shell scroll-mt-20" data-testid="risk-calculator-section">
+          <SectionHeading eyebrow="05 / Transparent model" title="Test the risk score" description="Adjust the five inputs to see how the weighted educational model responds. The same calculation is available through the project API." />
+          <div className="grid gap-5 lg:grid-cols-[1fr_.8fr]"><div className="dashboard-card rounded-2xl p-5 sm:p-7" data-testid="risk-calculator-form"><div className="mb-6 flex items-center justify-between"><div><p className="eyebrow">Scenario simulator</p><h3 className="mt-1 font-heading text-lg font-semibold text-white">Build a city scenario</h3></div><Calculator className="h-5 w-5 text-orange-300" /></div><div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">{([ ["max_temp", "Maximum temperature", `${calcValues.max_temp}°C`, 30, 48, 0.1], ["heatwave_days", "Heatwave days / year", `${calcValues.heatwave_days} days`, 0, 30, 1], ["pop_exposure", "Population exposure", `${calcValues.pop_exposure}%`, 0, 100, 1], ["urbanization", "Urbanization", `${calcValues.urbanization}%`, 0, 100, 1], ["vegetation_cover", "Green cover buffer", `${calcValues.vegetation_cover}%`, 0, 100, 1]] as const).map(([key, label, display, min, max, step]) => <label key={key} className="space-y-2" data-testid={`calculator-field-${key}`}><span className="flex items-center justify-between text-xs text-slate-400"><span>{label}</span><span className="font-mono text-orange-300">{display}</span></span><input type="range" min={min} max={max} step={step} value={calcValues[key]} onChange={(event) => setCalcValues((current) => ({ ...current, [key]: Number(event.target.value) }))} className="risk-slider w-full" data-testid={`calculator-slider-${key}`} /></label>)}</div><div className="mt-7 rounded-xl border border-white/[.07] bg-black/10 p-4"><p className="eyebrow">Model equation</p><p className="mt-2 text-xs leading-6 text-slate-400">Temperature <b className="text-orange-300">30%</b> + Frequency <b className="text-orange-300">25%</b> + Population <b className="text-orange-300">20%</b> + Urbanization <b className="text-orange-300">15%</b> + (100 − Vegetation) <b className="text-emerald-300">10%</b></p></div><Button onClick={() => calculateMutation.mutate(calcValues)} disabled={calculateMutation.isPending} className="mt-6 h-10 bg-orange-500 text-white hover:bg-orange-400" data-testid="calculate-risk-button">{calculateMutation.isPending ? "Calculating…" : "Calculate scenario score"}<ArrowUpRight className="ml-2 h-4 w-4" /></Button></div><div className="thermal-panel rounded-2xl p-6 sm:p-7" data-testid="calculator-result-panel"><p className="eyebrow text-orange-300">Live scenario preview</p><div className="mt-8 flex items-end justify-between"><div><p className="font-mono text-6xl font-bold text-white" data-testid="calculator-preview-score">{calculateMutation.data?.score ?? previewScore}</p><p className="mt-1 text-xs uppercase tracking-wider text-slate-500">out of 100</p></div><RiskBadge tier={calculateMutation.data?.tier ?? (previewScore >= 75 ? "very_high" : previewScore >= 60 ? "high" : previewScore >= 40 ? "moderate" : "low")} /></div><div className="mt-8 space-y-3"><div className="flex justify-between text-xs"><span className="text-slate-400">Hazard signal</span><span className="font-mono text-slate-200">{Math.round(((calcValues.max_temp - 30) / 18 * 100) * .3 + Math.min(100, calcValues.heatwave_days / 24 * 100) * .25)} pts</span></div><div className="h-2 rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-orange-400 to-red-500" style={{ width: `${previewScore}%` }} /></div><p className="text-xs leading-5 text-slate-400">Higher green cover reduces the score because vegetation can provide shade and evaporative cooling.</p></div><div className="mt-8 border-t border-white/[.08] pt-4 text-[10px] uppercase tracking-wider text-slate-500">Educational simulation · not an official warning</div></div></div>
+        </section>
+
+        <section id="safety" className="section-shell scroll-mt-20" data-testid="safety-awareness-section">
+          <SectionHeading eyebrow="06 / Heat health" title="Safety & awareness" description="Heat risk is a public-health issue. These simple actions can reduce exposure while official alerts and local heat action plans remain the authority." action={<span className="rounded-full border border-emerald-400/20 bg-emerald-400/[.07] px-3 py-2 text-[10px] uppercase tracking-wider text-emerald-300">Practical checklist</span>} />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><div className="advice-card" data-testid="safety-hydrate"><span className="advice-icon text-sky-300"><Droplets /></span><h3>Hydrate often</h3><p>Drink water regularly; do not wait until you feel thirsty.</p></div><div className="advice-card" data-testid="safety-avoid-peak"><span className="advice-icon text-orange-300"><SunIcon /></span><h3>Plan around peak heat</h3><p>Avoid unnecessary outdoor activity between 12 PM and 4 PM.</p></div><div className="advice-card" data-testid="safety-cooling"><span className="advice-icon text-emerald-300"><Leaf /></span><h3>Find shade & cooling</h3><p>Use shaded streets, cool spaces, light clothing, and ventilation.</p></div><div className="advice-card" data-testid="safety-community"><span className="advice-icon text-amber-300"><Users /></span><h3>Check on others</h3><p>Look out for older adults, children, outdoor workers, and neighbours.</p></div></div><div className="mt-4 flex flex-col items-start justify-between gap-4 rounded-2xl border border-red-400/20 bg-red-400/[.06] p-5 sm:flex-row sm:items-center" data-testid="official-alert-advisory"><div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-red-300" /><div><p className="text-sm font-semibold text-white">When symptoms appear, act quickly</p><p className="mt-1 text-xs leading-5 text-slate-400">Confusion, fainting, very hot skin, or seizures can signal heat stroke. Move to a cool place and seek emergency help.</p></div></div><span className="shrink-0 rounded-lg bg-red-400/10 px-3 py-2 font-mono text-xs text-red-200">Emergency: 108</span></div>
+        </section>
+
+        <section id="methodology" className="section-shell scroll-mt-20" data-testid="methodology-section">
+          <SectionHeading eyebrow="07 / Academic context" title="Methodology & project scope" description="HeatMap India is a teaching product: it makes a risk-assessment workflow understandable and replaceable, rather than presenting itself as an operational warning system." />
+          <div className="grid gap-5 lg:grid-cols-[1fr_1fr]"><div className="dashboard-card rounded-2xl p-6 sm:p-7" data-testid="methodology-model-card"><div className="flex items-start gap-4"><span className="number-chip">01</span><div><h3 className="font-heading text-lg font-semibold text-white">Hazard × exposure × context</h3><p className="mt-2 text-sm leading-6 text-slate-400">The demonstration combines a temperature signal and heatwave frequency with population exposure, urbanization pressure, and a vegetation cooling buffer. Each input is normalized to a 0–100 index.</p></div></div><div className="my-7 flex flex-wrap items-center gap-2 text-xs"><span className="formula-chip">Temperature <b>30%</b></span><span className="text-slate-600">+</span><span className="formula-chip">Frequency <b>25%</b></span><span className="text-slate-600">+</span><span className="formula-chip">Exposure <b>20%</b></span><span className="text-slate-600">+</span><span className="formula-chip">Urban <b>15%</b></span><span className="text-slate-600">+</span><span className="formula-chip">Green buffer <b>10%</b></span></div><div className="flex gap-3 border-t border-white/[.07] pt-5 text-xs leading-5 text-slate-500"><CircleHelp className="h-4 w-4 shrink-0 text-orange-300" /> The weights are a simple educational assumption for demonstrating multi-factor assessment. They should be reviewed before any research or policy use.</div></div><div className="dashboard-card rounded-2xl p-6 sm:p-7" data-testid="about-project-card"><div className="flex items-start gap-4"><span className="number-chip bg-sky-400/10 text-sky-300">02</span><div><h3 className="font-heading text-lg font-semibold text-white">Why cities need a heat lens</h3><p className="mt-2 text-sm leading-6 text-slate-400">Dense built surfaces can retain heat, while high population exposure can increase health impacts. Digital maps help students communicate where multiple pressures overlap and where cooling, shade, and preparedness deserve attention.</p></div></div><div className="mt-7 grid grid-cols-3 gap-2"><div className="rounded-xl bg-white/[.04] p-3 text-center"><Trees className="mx-auto h-5 w-5 text-emerald-300" /><p className="mt-2 text-[10px] text-slate-400">Green cover</p></div><div className="rounded-xl bg-white/[.04] p-3 text-center"><Users className="mx-auto h-5 w-5 text-orange-300" /><p className="mt-2 text-[10px] text-slate-400">Exposure</p></div><div className="rounded-xl bg-white/[.04] p-3 text-center"><BarChart3 className="mx-auto h-5 w-5 text-sky-300" /><p className="mt-2 text-[10px] text-slate-400">Evidence</p></div></div><div className="mt-5 rounded-xl border border-red-400/15 bg-red-400/[.05] p-3 text-xs leading-5 text-slate-400"><b className="text-red-200">Limitation:</b> This product is not an official IMD early-warning or government decision-support system.</div></div></div>
+        </section>
+
+        <section id="sources" className="section-shell scroll-mt-20" data-testid="sources-section">
+          <SectionHeading eyebrow="08 / Research trail" title="Data sources & references" description="The demo values are labelled and intentionally replaceable. These are authoritative starting points for a verified future dataset, not claims that the demo values came from them." />
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4"><SourceCard number="01" title="India Meteorological Department" text="Official observations, heatwave definitions, warnings, and climate summaries." href="https://mausam.imd.gov.in/" testId="source-imd" /><SourceCard number="02" title="NDMA heatwave guidance" text="National guidance for heatwave preparedness and heat action planning." href="https://ndma.gov.in/" testId="source-ndma" /><SourceCard number="03" title="IPCC climate science" text="Assessment literature on urban climate risk, vulnerability, and adaptation." href="https://www.ipcc.ch/report/ar6/wg2/" testId="source-ipcc" /><SourceCard number="04" title="Replaceable data schema" text="City records in this app mirror a simple JSON/Pydantic shape for future research." testId="source-schema" /></div><div className="mt-12 flex flex-col justify-between gap-4 border-t border-white/[.08] pt-6 text-xs text-slate-500 sm:flex-row"><span className="flex items-center gap-2"><ThermometerSun className="h-4 w-4 text-orange-400" /> HeatMap India · Environmental Studies CA1</span><span>Educational demonstration · Data status: Demo Data</span></div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function SourceCard({ number, title, text, href, testId }: { number: string; title: string; text: string; href?: string; testId: string }) {
+  const content = <><span className="font-mono text-[10px] text-orange-300">{number}</span><h3 className="mt-5 font-heading text-sm font-semibold text-white">{title}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{text}</p><span className="mt-5 flex items-center gap-1 text-[10px] text-slate-400">{href ? "Open reference" : "Built for replacement"}<ExternalLink className="h-3 w-3" /></span></>;
+  return href ? <a href={href} target="_blank" rel="noreferrer" className="source-card" data-testid={testId}>{content}</a> : <div className="source-card" data-testid={testId}>{content}</div>;
+}
+
+function SunIcon() {
+  return <span className="relative block h-5 w-5"><span className="absolute inset-1 rounded-full border-2 border-current" /><span className="absolute left-1/2 top-0 h-1 w-0.5 -translate-x-1/2 bg-current" /><span className="absolute bottom-0 left-1/2 h-1 w-0.5 -translate-x-1/2 bg-current" /><span className="absolute left-0 top-1/2 h-0.5 w-1 -translate-y-1/2 bg-current" /><span className="absolute right-0 top-1/2 h-0.5 w-1 -translate-y-1/2 bg-current" /></span>;
+}
