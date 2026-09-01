@@ -115,6 +115,10 @@ body { background: #0A0E17; }
 .kpi-note { margin-top: 4px; font-family: 'JetBrains Mono Variable', monospace; font-size: 9px; }
 .city-node { transition: filter .2s ease; }
 .city-node:hover { filter: brightness(1.25); }
+.map-control-button { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 8px; color: #cbd5e1; transition: background .2s ease, color .2s ease, transform .2s ease; }
+.map-control-button:hover { background: rgba(249,115,22,.14); color: #FDBA74; transform: translateY(-1px); }
+.map-city-label { opacity: .78; transition: opacity .2s ease, fill .2s ease; }
+.map-city-label-active { fill: #fff7ed; font-weight: 700; }
 .map-shell:after { position: absolute; inset: 12% 14%; border: 1px solid rgba(56,189,248,.08); border-radius: 50%; content: ''; pointer-events: none; }
 .advice-card { border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 20px; background: rgba(17,24,39,.62); transition: transform .25s ease, background .25s ease; }
 .advice-card:hover { transform: translateY(-3px); background: rgba(25,36,55,.8); }

@@ -20,6 +20,9 @@ class CityRisk(BaseModel):
     score: int = Field(ge=0, le=100)
     tier: RiskTier
     is_demo: bool = True
+    source_note: str = Field(
+        default="Educational demonstration value; replace with station-level verified dataset."
+    )
 
 
 class TrendPoint(BaseModel):
@@ -61,6 +64,11 @@ CITY_DATA: list[CityRisk] = [
     CityRisk(id="pune", name="Pune", state="Maharashtra", lat=18.5204, lng=73.8567, max_temp=41.0, heatwave_days=10, pop_exposure=74, urbanization=80, vegetation_cover=32, score=55, tier="moderate"),
     CityRisk(id="visakhapatnam", name="Visakhapatnam", state="Andhra Pradesh", lat=17.6868, lng=83.2185, max_temp=39.5, heatwave_days=9, pop_exposure=66, urbanization=71, vegetation_cover=35, score=52, tier="moderate"),
     CityRisk(id="chandigarh", name="Chandigarh", state="Punjab/Haryana", lat=30.7333, lng=76.7794, max_temp=43.2, heatwave_days=13, pop_exposure=55, urbanization=78, vegetation_cover=42, score=57, tier="moderate"),
+    CityRisk(id="ludhiana", name="Ludhiana", state="Punjab", lat=30.9010, lng=75.8573, max_temp=45.4, heatwave_days=18, pop_exposure=83, urbanization=86, vegetation_cover=16, score=79, tier="very_high", source_note="Demo baseline structured for replacement with IMD station records and Punjab SAPCC indicators."),
+    CityRisk(id="amritsar", name="Amritsar", state="Punjab", lat=31.6340, lng=74.8723, max_temp=44.8, heatwave_days=16, pop_exposure=76, urbanization=79, vegetation_cover=22, score=74, tier="high", source_note="Demo baseline structured for replacement with IMD station records and Punjab climate indicators."),
+    CityRisk(id="bathinda", name="Bathinda", state="Punjab", lat=30.2110, lng=74.9455, max_temp=46.1, heatwave_days=21, pop_exposure=71, urbanization=68, vegetation_cover=14, score=78, tier="very_high", source_note="Demo baseline structured for replacement with IMD extreme-weather records and Punjab SAPCC indicators."),
+    CityRisk(id="jalandhar", name="Jalandhar", state="Punjab", lat=31.3260, lng=75.5762, max_temp=43.9, heatwave_days=14, pop_exposure=74, urbanization=78, vegetation_cover=20, score=69, tier="high", source_note="Demo baseline structured for replacement with IMD station records and Punjab state heat indicators."),
+    CityRisk(id="patiala", name="Patiala", state="Punjab", lat=30.3398, lng=76.3869, max_temp=44.6, heatwave_days=15, pop_exposure=67, urbanization=71, vegetation_cover=24, score=67, tier="high", source_note="Demo baseline structured for replacement with IMD station records and Punjab SAPCC indicators."),
     CityRisk(id="bengaluru", name="Bengaluru", state="Karnataka", lat=12.9716, lng=77.5946, max_temp=38.2, heatwave_days=7, pop_exposure=84, urbanization=87, vegetation_cover=36, score=53, tier="moderate"),
     CityRisk(id="kochi", name="Kochi", state="Kerala", lat=9.9312, lng=76.2673, max_temp=36.4, heatwave_days=4, pop_exposure=60, urbanization=73, vegetation_cover=46, score=38, tier="low"),
     CityRisk(id="guwahati", name="Guwahati", state="Assam", lat=26.1445, lng=91.7362, max_temp=37.8, heatwave_days=5, pop_exposure=52, urbanization=60, vegetation_cover=52, score=35, tier="low"),

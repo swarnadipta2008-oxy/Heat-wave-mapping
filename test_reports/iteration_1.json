@@ -1,0 +1,92 @@
+{
+  "iteration": 1,
+  "summary": "All 8 acceptance criteria verified: 3 backend test files (4 tests) covering cities/trends/calculator APIs, and 8 named browser checks covering the map, controls, city inspector, dashboard, comparison, trends, calculator UI, and safety/methodology/sources content. Everything passed.",
+  "passed": 11,
+  "failed": 0,
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "Dashboard summaries and charts render from API data (cities endpoint)",
+      "name": "test_tscheck_dashboard_summaries.py::test_heatmap_cities_returns_25_demo_records",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "GET /api/heatmap/cities -> 200, 25 records; Delhi score=88, Bathinda score=78; Ludhiana/Amritsar/Bathinda/Jalandhar/Patiala/Chandigarh present; all records is_demo=true"
+    },
+    {
+      "criterion": "Heatwave trends are clearly demonstration data (trends endpoint)",
+      "name": "test_tscheck_heatwave_trends_demo.py::test_heatmap_trends_returns_ten_year_demo_series",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "GET /api/heatmap/trends -> 200, 10 points, years 2015..2024 chronological, each with frequency/day_temperature/night_temperature"
+    },
+    {
+      "criterion": "Transparent risk calculator works (calculate endpoint happy path + validation)",
+      "name": "test_tscheck_risk_calculator_api.py::test_heatmap_calculate_returns_score_and_tier + test_heatmap_calculate_rejects_invalid_payload",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/heatmap/calculate {max_temp:44,...} -> 200 {score:.., tier:.., formula:'Temperature 30%...', components:{...}}; invalid payload {max_temp:'not-a-number'} -> 422"
+    },
+    {
+      "criterion": "Interactive India map is geographically recognizable and screenshot-ready",
+      "name": "map-geographically-recognizable-layout",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "1440x900 screenshot shows detailed India outline with J&K crown, NE corridor (Assam/Guwahati), peninsula; bounding-box checks confirmed no overlap between toolbar, map canvas, legend and inspector panel"
+    },
+    {
+      "criterion": "Map controls and regional filtering work",
+      "name": "map-controls-and-region-filtering",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Layer selector toggled cartographic<->thermal (thermal-overlay appears/disappears); zoom-in x2 -> 1.4x, zoom-out -> 1.2x, reset -> 1.0x; region=punjab shows Bathinda/Ludhiana markers and hides Delhi marker; clear-region restores Delhi"
+    },
+    {
+      "criterion": "City marker selection and search update details",
+      "name": "city-marker-selection-updates-inspector",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Clicking city-marker-bathinda set inspector name=Bathinda, score contains 78, state Punjab, demo note visible; search 'Amritsar' -> search-result-amritsar click updated inspector to Amritsar/Punjab"
+    },
+    {
+      "criterion": "Dashboard summaries and charts render from API data (UI)",
+      "name": "dashboard-summaries-render-from-api",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "kpi-total-cities shows 25, kpi-highest-city shows Delhi/88, ranking and distribution chart svgs render, distribution-low tier visible"
+    },
+    {
+      "criterion": "City comparison supports 2-4 cities",
+      "name": "city-comparison-supports-2-to-4-cities",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Adding a 4th and attempting a 5th city capped selection at '4 / 4 selected'; removing down to 2 and attempting a 3rd removal kept '2 / 4 selected'; radar chart and metrics table rendered with selected cities"
+    },
+    {
+      "criterion": "Heatwave trends are clearly demonstration data (UI)",
+      "name": "heatwave-trends-demo-data-labeled",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Section shows 2015-2024 range, 'Demo series' label, temperature and frequency chart svgs render, disclaimer text 'not a verified historical record' visible"
+    },
+    {
+      "criterion": "Transparent risk calculator works (UI)",
+      "name": "risk-calculator-updates-preview-and-submits",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Formula text (30%) and 'Educational simulation' warning visible; moving max_temp slider changed calculator-preview-score; POST /api/heatmap/calculate returned 200 with score/tier, preview score updated to match API response. NOTE: first attempt set slider.value directly which bypassed React's controlled-input listener (test scripting issue, not app bug) - fixed using native value setter dispatch, then passed"
+    },
+    {
+      "criterion": "Safety, methodology, about and sources are complete",
+      "name": "safety-methodology-sources-complete",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Safety cards (hydrate/avoid-peak/cooling/community) and heat-stroke advisory visible; methodology shows 30% formula chip and 'not an official IMD' limitation; source links verified: mausam.imd.gov.in, ndma.gov.in, bhuvan.nrsc.gov.in, pscst.punjab.gov.in, BharatMaps repo"
+    }
+  ],
+  "bugs": [],
+  "action_items": [],
+  "notes": [
+    "Matrix has 8 criteria; 3 are API-bearing and received both a backend test file and a browser check (dashboard/cities, trends, calculator), giving 11 total artifacts.",
+    "risk-calculator check initially failed due to a test-script limitation (native DOM value set on a React-controlled range input didn't trigger React's onChange) — fixed by dispatching via the native input value setter; classified as flaky/test-authoring issue, not an application bug."
+  ]
+}

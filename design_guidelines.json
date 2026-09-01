@@ -1,245 +1,244 @@
 {
   "project_name": "HeatMap India – Digital Heatwave Risk Mapping for Indian Cities",
-  "project_type": "Environmental Studies College CA1 Interactive Web Dashboard",
-  "archetype": "The Performance Pro & Tactical Climate Intelligence (Deep Slate/Charcoal #0B0F17 with Thermal Amber/Crimson and Emerald Accents)",
-  "theme_strategy": {
-    "default_theme": "dark",
-    "support_toggle": true,
-    "dark_palette": {
-      "bg_primary": "#0A0E17",
-      "bg_surface": "#111827",
-      "bg_card": "rgba(17, 24, 39, 0.75)",
-      "border": "rgba(255, 255, 255, 0.08)",
-      "text_primary": "#F9FAFB",
-      "text_secondary": "#94A3B8",
-      "text_muted": "#64748B"
-    },
-    "light_palette": {
-      "bg_primary": "#F8FAFC",
-      "bg_surface": "#FFFFFF",
-      "bg_card": "rgba(255, 255, 255, 0.9)",
-      "border": "rgba(15, 23, 42, 0.1)",
-      "text_primary": "#0F172A",
-      "text_secondary": "#475569",
-      "text_muted": "#94A3B8"
-    },
-    "risk_tier_colors": {
-      "low": {
-        "hex": "#10B981",
-        "bg": "rgba(16, 185, 129, 0.15)",
-        "border": "rgba(16, 185, 129, 0.35)",
-        "label": "Low Risk (Score < 40)"
-      },
-      "moderate": {
-        "hex": "#F59E0B",
-        "bg": "rgba(245, 158, 11, 0.15)",
-        "border": "rgba(245, 158, 11, 0.35)",
-        "label": "Moderate Risk (Score 40 - 59)"
+  "project_type": "Environmental Studies CA1 Academic Project / Interactive Climate Dashboard",
+  "archetype": "The Performance Pro & High-Contrast Scientific",
+  "theme_preference": "Deep Charcoal / Obsidian Dark Mode (#0A0E17) with Thermal Thermal Accents (#F97316, #EF4444, #F59E0B, #10B981, #38BDF8)",
+  "design_vision": "Transform an environmental studies college project into a high-precision, recognizably cartographic, publishable scientific web application. It combines authentic Indian geographic boundaries (dependency-free custom SVG with accurate coastline, peninsular taper, northern crown, and NE corridor), interactive zoom/pan/reset affordances, recalibrated latitude/longitude coordinates, state/region click filters, Punjab regional expansion (Ludhiana, Amritsar, Bathinda, Patiala, Jalandhar), multi-dimensional risk radars, transparent scoring calculators, and screenshot-friendly report-ready widgets.",
+  "typography": {
+    "heading_font": "Space Grotesk Variable, sans-serif",
+    "body_font": "IBM Plex Sans, sans-serif",
+    "mono_font": "JetBrains Mono Variable, monospace",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white",
+      "h3": "text-xl sm:text-2xl font-semibold text-white",
+      "h4_widget": "text-lg sm:text-xl font-medium text-slate-100",
+      "body": "text-sm sm:text-base text-slate-400 leading-relaxed",
+      "eyebrow": "text-[10px] font-mono uppercase tracking-[0.2em] font-semibold text-amber-400",
+      "mono_data": "font-mono font-bold text-white tracking-tight"
+    }
+  },
+  "colors": {
+    "background": "#0A0E17",
+    "surface_card": "#111827",
+    "surface_card_glow": "linear-gradient(145deg, rgba(17,24,39,0.88), rgba(13,20,33,0.76))",
+    "surface_thermal": "radial-gradient(circle at 85% 10%, rgba(239,68,68,0.18), transparent 35%), linear-gradient(145deg, #172235, #101724)",
+    "border_subtle": "rgba(255, 255, 255, 0.08)",
+    "border_focus": "rgba(249, 115, 22, 0.4)",
+    "risk_tiers": {
+      "very_high": {
+        "label": "Very High Risk",
+        "color": "#EF4444",
+        "bg": "rgba(239, 68, 68, 0.16)",
+        "border": "rgba(239, 68, 68, 0.45)",
+        "glow": "0 0 16px rgba(239, 68, 68, 0.45)"
       },
       "high": {
-        "hex": "#F97316",
-        "bg": "rgba(249, 115, 22, 0.15)",
-        "border": "rgba(249, 115, 22, 0.35)",
-        "label": "High Risk (Score 60 - 74)"
+        "label": "High Risk",
+        "color": "#F97316",
+        "bg": "rgba(249, 115, 22, 0.16)",
+        "border": "rgba(249, 115, 22, 0.45)",
+        "glow": "0 0 16px rgba(249, 115, 22, 0.45)"
       },
-      "very_high": {
-        "hex": "#EF4444",
-        "bg": "rgba(239, 68, 68, 0.18)",
-        "border": "rgba(239, 68, 68, 0.45)",
-        "label": "Very High Risk (Score >= 75)"
+      "moderate": {
+        "label": "Moderate Risk",
+        "color": "#F59E0B",
+        "bg": "rgba(245, 158, 11, 0.16)",
+        "border": "rgba(245, 158, 11, 0.45)",
+        "glow": "0 0 14px rgba(245, 158, 11, 0.4)"
+      },
+      "low": {
+        "label": "Low Risk",
+        "color": "#10B981",
+        "bg": "rgba(16, 185, 129, 0.16)",
+        "border": "rgba(16, 185, 129, 0.45)",
+        "glow": "0 0 14px rgba(16, 185, 129, 0.4)"
       }
+    },
+    "text": {
+      "primary": "#F8FAFC",
+      "secondary": "#94A3B8",
+      "muted": "#64748B",
+      "accent_hot": "#FB923C",
+      "accent_cool": "#38BDF8"
     }
   },
-  "typography": {
-    "heading_font": "Space Grotesk or Outfit (Display Tech), Sans-Serif",
-    "body_font": "IBM Plex Sans or Geist Sans, sans-serif",
-    "mono_font": "JetBrains Mono or IBM Plex Mono, monospace",
-    "hierarchy": {
-      "h1": "text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight",
-      "h2": "text-2xl sm:text-3xl font-bold tracking-tight",
-      "h3": "text-xl sm:text-2xl font-semibold",
-      "h4": "text-lg sm:text-xl font-medium",
-      "subtitles": "text-base sm:text-lg text-muted-foreground",
-      "body": "text-sm sm:text-base leading-relaxed",
-      "caption": "text-xs uppercase tracking-widest font-mono text-muted-foreground"
-    }
-  },
-  "dataset_specifications": {
-    "total_cities": 20,
-    "coverage": [
-      { "id": "delhi", "name": "Delhi (NCR)", "state": "Delhi", "lat": 28.6139, "lng": 77.2090, "max_temp": 46.8, "heatwave_days": 24, "pop_exposure": 94, "urbanization": 92, "vegetation_cover": 18, "score": 88, "tier": "very_high", "is_demo": true },
-      { "id": "ahmedabad", "name": "Ahmedabad", "state": "Gujarat", "lat": 23.0225, "lng": 72.5714, "max_temp": 46.2, "heatwave_days": 22, "pop_exposure": 85, "urbanization": 88, "vegetation_cover": 14, "score": 86, "tier": "very_high", "is_demo": true },
-      { "id": "nagpur", "name": "Nagpur", "state": "Maharashtra", "lat": 21.1458, "lng": 79.0882, "max_temp": 45.9, "heatwave_days": 21, "pop_exposure": 78, "urbanization": 76, "vegetation_cover": 22, "score": 82, "tier": "very_high", "is_demo": true },
-      { "id": "hyderabad", "name": "Hyderabad", "state": "Telangana", "lat": 17.3850, "lng": 78.4867, "max_temp": 43.6, "heatwave_days": 18, "pop_exposure": 88, "urbanization": 84, "vegetation_cover": 19, "score": 79, "tier": "very_high", "is_demo": true },
-      { "id": "patna", "name": "Patna", "state": "Bihar", "lat": 25.5941, "lng": 85.1376, "max_temp": 44.5, "heatwave_days": 19, "pop_exposure": 82, "urbanization": 74, "vegetation_cover": 16, "score": 78, "tier": "very_high", "is_demo": true },
-      { "id": "jaipur", "name": "Jaipur", "state": "Rajasthan", "lat": 26.9124, "lng": 75.7873, "max_temp": 45.2, "heatwave_days": 20, "pop_exposure": 76, "urbanization": 75, "vegetation_cover": 15, "score": 76, "tier": "very_high", "is_demo": true },
-      { "id": "lucknow", "name": "Lucknow", "state": "Uttar Pradesh", "lat": 26.8467, "lng": 80.9462, "max_temp": 44.1, "heatwave_days": 16, "pop_exposure": 79, "urbanization": 72, "vegetation_cover": 21, "score": 73, "tier": "high", "is_demo": true },
-      { "id": "bhopal", "name": "Bhopal", "state": "Madhya Pradesh", "lat": 23.2599, "lng": 77.4126, "max_temp": 43.8, "heatwave_days": 15, "pop_exposure": 68, "urbanization": 70, "vegetation_cover": 28, "score": 67, "tier": "high", "is_demo": true },
-      { "id": "chennai", "name": "Chennai", "state": "Tamil Nadu", "lat": 13.0827, "lng": 80.2707, "max_temp": 42.1, "heatwave_days": 14, "pop_exposure": 86, "urbanization": 90, "vegetation_cover": 17, "score": 72, "tier": "high", "is_demo": true },
-      { "id": "kolkata", "name": "Kolkata", "state": "West Bengal", "lat": 22.5726, "lng": 88.3639, "max_temp": 41.5, "heatwave_days": 15, "pop_exposure": 91, "urbanization": 89, "vegetation_cover": 15, "score": 74, "tier": "high", "is_demo": true },
-      { "id": "bhubaneswar", "name": "Bhubaneswar", "state": "Odisha", "lat": 20.2961, "lng": 85.8245, "max_temp": 43.4, "heatwave_days": 14, "pop_exposure": 64, "urbanization": 68, "vegetation_cover": 25, "score": 65, "tier": "high", "is_demo": true },
-      { "id": "mumbai", "name": "Mumbai", "state": "Maharashtra", "lat": 19.0760, "lng": 72.8777, "max_temp": 38.9, "heatwave_days": 11, "pop_exposure": 96, "urbanization": 95, "vegetation_cover": 20, "score": 68, "tier": "high", "is_demo": true },
-      { "id": "surat", "name": "Surat", "state": "Gujarat", "lat": 21.1702, "lng": 72.8311, "max_temp": 42.0, "heatwave_days": 12, "pop_exposure": 79, "urbanization": 86, "vegetation_cover": 18, "score": 64, "tier": "high", "is_demo": true },
-      { "id": "pune", "name": "Pune", "state": "Maharashtra", "lat": 18.5204, "lng": 73.8567, "max_temp": 41.0, "heatwave_days": 10, "pop_exposure": 74, "urbanization": 80, "vegetation_cover": 32, "score": 55, "tier": "moderate", "is_demo": true },
-      { "id": "visakhapatnam", "name": "Visakhapatnam", "state": "Andhra Pradesh", "lat": 17.6868, "lng": 83.2185, "max_temp": 39.5, "heatwave_days": 9, "pop_exposure": 66, "urbanization": 71, "vegetation_cover": 35, "score": 52, "tier": "moderate", "is_demo": true },
-      { "id": "chandigarh", "name": "Chandigarh", "state": "Punjab/Haryana", "lat": 30.7333, "lng": 76.7794, "max_temp": 43.2, "heatwave_days": 13, "pop_exposure": 55, "urbanization": 78, "vegetation_cover": 42, "score": 57, "tier": "moderate", "is_demo": true },
-      { "id": "bengaluru", "name": "Bengaluru", "state": "Karnataka", "lat": 12.9716, "lng": 77.5946, "max_temp": 38.2, "heatwave_days": 7, "pop_exposure": 84, "urbanization": 87, "vegetation_cover": 36, "score": 53, "tier": "moderate", "is_demo": true },
-      { "id": "kochi", "name": "Kochi", "state": "Kerala", "lat": 9.9312, "lng": 76.2673, "max_temp": 36.4, "heatwave_days": 4, "pop_exposure": 60, "urbanization": 73, "vegetation_cover": 46, "score": 38, "tier": "low", "is_demo": true },
-      { "id": "guwahati", "name": "Guwahati", "state": "Assam", "lat": 26.1445, "lng": 91.7362, "max_temp": 37.8, "heatwave_days": 5, "pop_exposure": 52, "urbanization": 60, "vegetation_cover": 52, "score": 35, "tier": "low", "is_demo": true },
-      { "id": "shimla", "name": "Shimla", "state": "Himachal Pradesh", "lat": 31.1048, "lng": 77.1734, "max_temp": 31.5, "heatwave_days": 2, "pop_exposure": 32, "urbanization": 45, "vegetation_cover": 75, "score": 21, "tier": "low", "is_demo": true }
-    ],
-    "risk_formula_weights": {
-      "temperature_anomaly_weight": 0.30,
-      "heatwave_frequency_weight": 0.25,
-      "population_exposure_weight": 0.20,
-      "urban_density_weight": 0.15,
-      "vegetation_offset_weight": -0.10
-    }
-  },
-  "interactive_map_design": {
-    "type": "Custom Interactive Vector SVG & Canvas Map of India",
-    "features": [
-      "Dependency-free, responsive high-detail India Geographic Vector bounds",
-      "Interactive Glowing Risk Pulsing Markers for each of the 20 cities",
-      "Zoom / Pan controls with reset button",
-      "Heatwave risk category filter toggle (All, Very High, High, Moderate, Low)",
-      "City hover card with micro-metrics (Peak Temp, Risk Score, Category)",
-      "City click selects city and scrolls/opens City Risk Profile Panel",
-      "Search bar with auto-suggestions linking directly to map city markers",
-      "Live Risk Legend with APCA-compliant color indicators and counts"
+  "cartography_and_map_specifications": {
+    "approach": "Recognizable, high-fidelity inline SVG map of India without external tile server dependencies",
+    "projection_calibration": {
+      "reference_bounding_box": {
+        "min_lng": 68.0,
+        "max_lng": 97.5,
+        "min_lat": 8.0,
+        "max_lat": 37.2
+      },
+      "svg_viewBox": "0 0 800 900",
+      "coordinate_transformation_formula": "x = ((lng - 68.0) / (97.5 - 68.0)) * 680 + 60; y = ((37.2 - lat) / (37.2 - 8.0)) * 780 + 50",
+      "notes": "Ensure mercator-like linear scaling with calibrated offsets to accurately position Punjab in northwest, Delhi in NCR, Gujarat bulges in the west, Kolkata/Assam in east/northeast, and Kanyakumari/Kochi/Chennai in the southern cone."
+    },
+    "interaction_features": {
+      "zoom_controls": ["Zoom In (+)", "Zoom Out (-)", "Reset View (⟲)", "Fit to Punjab / Focus Region"],
+      "pan_support": "Drag & pan canvas with transform matrix or viewBox sliding",
+      "state_region_filtering": "Clickable distinct SVG state paths/regions (North/Punjab, West/Gujarat-Rajasthan, Central/MP-Maharashtra, East/WB-Bihar-Odisha, South/Karnataka-TN-Kerala-Andhra-Telangana, Northeast/Assam)",
+      "layer_toggles": ["Heat Hazard Zones", "Thermal Isotherms", "State Outlines", "City Labels", "Vulnerability Clusters"],
+      "marker_interaction": "Hover tooltip + glowing radar pulse + click to inspect with deep dive stats in inspector panel"
+    },
+    "punjab_expansion_cities": [
+      {"id": "ludhiana", "name": "Ludhiana", "state": "Punjab", "lat": 30.9010, "lng": 75.8573, "max_temp": 45.4, "heatwave_days": 18, "pop_exposure": 82, "urbanization": 86, "vegetation_cover": 14, "score": 79, "tier": "very_high"},
+      {"id": "amritsar", "name": "Amritsar", "state": "Punjab", "lat": 31.6340, "lng": 74.8723, "max_temp": 44.8, "heatwave_days": 16, "pop_exposure": 74, "urbanization": 78, "vegetation_cover": 18, "score": 74, "tier": "high"},
+      {"id": "bathinda", "name": "Bathinda", "state": "Punjab", "lat": 30.2110, "lng": 74.9455, "max_temp": 46.2, "heatwave_days": 21, "pop_exposure": 68, "urbanization": 70, "vegetation_cover": 12, "score": 81, "tier": "very_high"},
+      {"id": "patiala", "name": "Patiala", "state": "Punjab", "lat": 30.3398, "lng": 76.3869, "max_temp": 43.9, "heatwave_days": 14, "pop_exposure": 69, "urbanization": 72, "vegetation_cover": 22, "score": 68, "tier": "high"},
+      {"id": "jalandhar", "name": "Jalandhar", "state": "Punjab", "lat": 31.3260, "lng": 75.5762, "max_temp": 44.2, "heatwave_days": 15, "pop_exposure": 72, "urbanization": 79, "vegetation_cover": 17, "score": 72, "tier": "high"}
     ]
   },
-  "sections_and_components": [
+  "authentic_citations_and_sources": [
     {
-      "id": "header-nav",
-      "name": "Navigation Bar",
-      "style": "Sticky Glassmorphic with Brand Badge, Anchors (Map, Dashboard, Compare, Trends, Calculator, Safety, Methodology, Sources), Theme Toggle, and Demo Data Badge",
-      "test_id": "main-navbar"
+      "code": "IMD",
+      "name": "India Meteorological Department (IMD)",
+      "url": "https://mausam.imd.gov.in/",
+      "role": "Heatwave criteria (≥40°C plains, ≥4.5°C departure from normal, severe heatwave ≥6.4°C departure)",
+      "badge": "Official Meteorological Data Standard"
     },
     {
-      "id": "hero-overview",
-      "name": "Hero & Academic CA1 Project Header",
-      "elements": [
-        "Project Title: HeatMap India",
-        "Subtitle: Digital Heatwave Risk Mapping for Indian Cities – An Environmental Studies (CA1) Academic Web Tool",
-        "Key Project Quick-Stats Banner (20 Cities Monitored, 6 Critical Hotspots, 46.8°C Record Peak, 62.4 Avg Risk)",
-        "Quick Action Buttons: 'Explore Interactive India Map', 'Open Risk Calculator', 'City Comparison Matrix'"
-      ]
+      "code": "NDMA",
+      "name": "National Disaster Management Authority (NDMA)",
+      "url": "https://ndma.gov.in/",
+      "role": "National Guidelines for Preparation of Action Plan - Prevention and Management of Heat Wave",
+      "badge": "National Disaster Framework"
     },
     {
-      "id": "interactive-map-section",
-      "name": "Interactive India Heatwave Risk Map",
-      "layout": "8-col Map Canvas + 4-col Dynamic City Spotlight Card (or Full Width on Mobile)",
-      "elements": [
-        "Filterable Risk Tier Pills",
-        "Vector Map of India with Region Gradients & City Coordinates",
-        "Interactive Pulsing Node Markers",
-        "Detailed City Info Panel showing breakdown radar/bars upon selection",
-        "Demo Dataset Disclaimer tag"
-      ]
+      "code": "ISRO Bhuvan",
+      "name": "ISRO Bhuvan Geoportal",
+      "url": "https://bhuvan.nrsc.gov.in/",
+      "role": "Land Surface Temperature (LST) & Urban Heat Island (UHI) Earth Observation Mapping",
+      "badge": "Satellite & Geospatial Observation"
     },
     {
-      "id": "city-risk-dashboard",
-      "name": "City Risk KPI & Analysis Center",
-      "elements": [
-        "KPI Cards: Total Cities, High/Very-High Hotspots, Avg National Risk Index, Most Vulnerable Urban Area",
-        "City Search & Filterable Table / Bento Grid",
-        "Risk distribution Bar/Pie Chart (Recharts)",
-        "Metric indicator badges (Max Temp, Heatwave Days, Population Density, Urbanization %, Green Canopy %)"
-      ]
-    },
-    {
-      "id": "city-comparison",
-      "name": "Multi-City Comparison Engine",
-      "elements": [
-        "City Multi-select selector (Choose 2 to 4 cities)",
-        "Side-by-side radar chart comparison of 5 core metrics",
-        "Metric delta breakdown table",
-        "Vulnerability differential commentary generator"
-      ]
-    },
-    {
-      "id": "risk-calculator",
-      "name": "Interactive Custom Risk Calculator & Simulator",
-      "elements": [
-        "Interactive Sliders for Max Temp (°C), Heatwave Days/Year, Population Density Index, Urban Impervious Surface %, Vegetation Canopy %",
-        "Dynamic formula preview showing weights and step-by-step arithmetic",
-        "Instant calculated score and risk category indicator with mitigation recommendations",
-        "Simulate 'Urban Greening' or 'Extreme Heat Anomaly' scenarios"
-      ]
-    },
-    {
-      "id": "heatwave-trends",
-      "name": "Historical & Decadal Heatwave Trends",
-      "elements": [
-        "10-Year Decadal Heatwave Frequency Area Chart for Indian Regions",
-        "Urban Heat Island (UHI) night vs day temperature differential chart",
-        "Clear distinction between Verified Historical Baselines (IMD/ERA5) vs Simulation Demo Projections"
-      ]
-    },
-    {
-      "id": "safety-awareness",
-      "name": "Safety, Health & Heat Action Guidelines",
-      "elements": [
-        "Actionable advisory cards (Hydration, Peak Hours Avoidance 12-4 PM, Wet Bulb Awareness, Vulnerable Care, Cool Roofs)",
-        "Heat Stroke vs Heat Exhaustion emergency symptom matrix",
-        "Official Indian Heat Action Plan (HAP) emergency helpline links (108, 1070/1077)"
-      ]
-    },
-    {
-      "id": "methodology-about",
-      "name": "Academic Project Context & Methodology",
-      "elements": [
-        "Why Indian Cities are Vulnerable (Dense concrete morphology, UHI effect, monsoonal pre-heat spikes)",
-        "Methodology Breakdown: AR5 Hazard × Vulnerability framework",
-        "Scope & Limitations: Educational simulation, not an official IMD early-warning system"
-      ]
-    },
-    {
-      "id": "sources-references",
-      "name": "Data Sources & Academic References",
-      "elements": [
-        "IMD (India Meteorological Department) Thresholds",
-        "NDMA National Heat Action Guidelines",
-        "IPCC AR6 Urban Climate Chapters",
-        "Easy Replaceable JSON schema docs for future researchers"
-      ]
+      "code": "Punjab SAPCC",
+      "name": "Punjab State Action Plan on Climate Change (SAPCC)",
+      "url": "http://pste.punjab.gov.in/",
+      "role": "State-level Vulnerability Assessment, Agricultural Heat Stress & Urban Climate Adaptation",
+      "badge": "State Climate Policy"
     }
   ],
   "image_urls": [
     {
-      "category": "hero_heat_environment",
-      "url": "https://images.unsplash.com/photo-1669429705181-f1baa74da070?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwyfHxpbmRpYW4lMjBjaXR5JTIwaGVhdCUyMHNvbGFyJTIwc3VuJTIwY2xpbWF0ZXxlbnwwfHx8fDE3ODgyNTc1ODd8MA&ixlib=rb-4.1.0&q=85",
-      "description": "Blazing sunset over Indian urban high-rises symbolizing urban heat trapping and summer climate severity"
+      "category": "Hero Banner Background",
+      "image_url": "https://images.unsplash.com/photo-1628867625587-9977262f6ab6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHw0fHxzb2xhciUyMGhlYXR3YXZlJTIwY2l0eSUyMGRyb3VnaHQlMjBpbmRpYXxlbnwwfHx8fDE3ODgyNTkwNDB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Indian urban skyline under blazing orange heatwave sunset, perfect for atmospheric hero backdrop overlay"
     },
     {
-      "category": "urban_heat_roadway",
-      "url": "https://images.unsplash.com/photo-1622001979405-502790313bcd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwzfHxpbmRpYW4lMjBjaXR5JTIwaGVhdCUyMHNvbGFyJTIwc3VuJTIwY2xpbWF0ZXxlbnwwfHx8fDE3ODgyNTc1ODd8MA&ixlib=rb-4.1.0&q=85",
-      "description": "Intense thermal sun over urban infrastructure and streets demonstrating human exposure"
+      "category": "Urban Heat Island Context",
+      "image_url": "https://images.unsplash.com/photo-1560319003-24094e042e10?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwyfHxzb2xhciUyMGhlYXR3YXZlJTIwY2l0eSUyMGRyb3VnaHQlMjBpbmRpYXxlbnwwfHx8fDE3ODgyNTkwNDB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "High density aerial view of Indian city buildings under intense midday thermal exposure for methodology/urban heat island cards"
     },
     {
-      "category": "green_cover_mitigation",
-      "url": "https://images.unsplash.com/photo-1725543497674-b33051a9d76e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwzfHxkZWxoaSUyMHVyYmFuJTIwdHJlZSUyMGNhbm9weSUyMGdyZWVufGVufDB8fHx8MTc4ODI1NzU5M3ww&ixlib=rb-4.1.0&q=85",
-      "description": "Lush urban tree canopy and parkland illustrating urban cooling mitigation and nature-based solutions"
-    },
-    {
-      "category": "hydration_health_advisory",
-      "url": "https://images.unsplash.com/photo-1643059967605-1d1bafcbf331?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwzfHxkcmlua2luZyUyMHdhdGVyJTIwaGVhdCUyMGh5ZHJhdGlvbnxlbnwwfHx8fDE3ODgyNTc1OTh8MA&ixlib=rb-4.1.0&q=85",
-      "description": "Drinking fresh water in intense heat, demonstrating hydration and heatwave safety"
+      "category": "Vulnerability & Built Environment",
+      "image_url": "https://images.unsplash.com/photo-1705861144284-d52dd52fa3dd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwzfHxzb2xhciUyMGhlYXR3YXZlJTIwY2l0eSUyMGRyb3VnaHQlMjBpbmRpYXxlbnwwfHx8fDE3ODgyNTkwNDB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Rooftops and informal urban settlements showing unequal exposure to heatwave conditions"
     }
   ],
+  "components_structure": {
+    "header": {
+      "path": "src/pages/Home.tsx",
+      "elements": [
+        "Brand icon (ThermometerSun) + HeatMap India logo",
+        "CA1 Environmental Studies project badge",
+        "Sticky glassmorphic navbar with active section observer",
+        "Region quick selector (All India vs Punjab Spotlight)",
+        "Demo Data indicator tag with IMD/NDMA compliance tooltip",
+        "Screenshot / Export PDF quick action button"
+      ]
+    },
+    "hero_overview": {
+      "elements": [
+        "Punchy academic title with thermal gradient",
+        "Project statement citing CA1 Environmental Studies topic: Digital Heatwave Risk Mapping for Indian Cities",
+        "National Thermal Index live card with 10-year trend mini-sparkline",
+        "Key stat counters: 25+ cities monitored, High Risk Hotspots, Peak demo temperature recorded, Punjab region focus"
+      ]
+    },
+    "interactive_map_atlas": {
+      "elements": [
+        "Dependency-free high-precision India SVG map with realistic peninsular and northern territory geometry",
+        "Interactive pan/zoom toolbar with Zoom+, Zoom-, Reset, and Focus Punjab buttons",
+        "Clickable state region overlays that filter cities list and adjust map focus",
+        "Recalibrated city markers with color-coded risk tier badges and live pulse rings",
+        "Layer toggles: Thermal Isotherms, State Boundaries, Heat Island Radii, Risk Score Labels",
+        "City Risk Inspector Card with detailed breakdown, radial score meter, 5-variable metrics, and raw coordinate tags"
+      ]
+    },
+    "dashboard_kpis_and_analytics": {
+      "elements": [
+        "4 KPI cards: Cities Monitored, Critical Hotspot Count, Average National Score, Highest Risk City",
+        "Top 10 City Risk Ranking horizontal bar chart with custom tier colors",
+        "Risk Tier Distribution donut chart with center totals",
+        "State-wise vulnerability aggregated summary cards"
+      ]
+    },
+    "city_comparison_engine": {
+      "elements": [
+        "Multi-city selector chips (2 to 4 cities simultaneous comparison)",
+        "5-axis Radar chart (Max Temp, Heatwave Days, Population Exposure, Urbanization, Green Buffer)",
+        "Side-by-side comparative metric matrix table with difference indicators"
+      ]
+    },
+    "heatwave_trends_and_signals": {
+      "elements": [
+        "10-Year dual axis line chart (Day Peak Temperature vs Night Min Temperature)",
+        "Annual heatwave day frequency area chart with thermal glow fill",
+        "Academic analysis card explaining Nocturnal Urban Heat Island Effect"
+      ]
+    },
+    "transparent_risk_calculator": {
+      "elements": [
+        "5 interactive range sliders with live numeric feedback",
+        "Transparent formula breakdown with weighted percentages (30% Temp + 25% Freq + 20% Pop + 15% Urban + 10% Inverse Green)",
+        "Live calculation result panel with category badge and component point contributions"
+      ]
+    },
+    "safety_heat_action_plan": {
+      "elements": [
+        "4 NDMA & IMD safety advisory cards (Hydration, Peak Hours 12-4 PM, Cool Roofs/Shade, Vulnerable Populations)",
+        "Heat Stroke warning signs & Emergency 108 protocol banner",
+        "Local Heat Action Plan (HAP) adaptation recommendations (White roofs, urban greening, water kiosks)"
+      ]
+    },
+    "methodology_and_scope": {
+      "elements": [
+        "Formula normalization mechanics (0-100 scale)",
+        "Academic scope & limitations (Educational model vs operational early warning system)",
+        "Why cities need a digital heat lens (Satellite data integration pathway with ISRO Bhuvan)"
+      ]
+    },
+    "sources_and_citations": {
+      "elements": [
+        "4 interactive source cards linking to IMD, NDMA, ISRO Bhuvan, and Punjab SAPCC",
+        "Academic bibliography citation snippet for university submission",
+        "Download summary / Screenshot-safe presentation mode"
+      ]
+    }
+  },
+  "screenshot_safe_layout_rules": {
+    "print_media_css": "@media print { body { background: #0A0E17 !important; color: white !important; } .no-print { display: none !important; } }",
+    "card_padding": "p-5 sm:p-7 with border-radius 16px and subtle 1px border so borders do not clip text when captured in slides",
+    "fixed_dimensions": "Key charts must have explicit responsive containers and minimum heights (280px-350px) preventing layout shift during presentation screengrabs",
+    "export_view_mode": "Include a toggle or clean view mode that expands charts and maps into a clean presentation sheet"
+  },
   "instructions_to_main_agent": [
-    "Build the application as a highly responsive, rich single-page academic dashboard in React (App.tsx / components).",
-    "Implement an SVG interactive India Map with precise geographic projection coordinates for the 20 Indian cities.",
-    "Allow clicking on any map node to open the City Risk Inspector panel with detailed stats, radar charts, and vulnerability breakdown.",
-    "Provide a dedicated City Comparison tool where users can pick 2-4 cities and compare them side-by-side using Recharts radar and bar charts.",
-    "Implement an interactive Risk Simulator / Calculator with sliders so professors/students can adjust Temperature, Days, Population, Urbanization, and Vegetation to see how the mathematical score dynamically recalculates.",
-    "Include full Heatwave Trends section with decadal and UHI charts.",
-    "Display prominent, clean tags marking non-verified entries as 'Demo Data / Educational Simulation' to meet academic integrity standards.",
-    "Include Safety & Awareness section with symptom matrix, advisory cards, and official emergency hotline numbers.",
-    "Add 'About the Project' (EVS CA1 college assignment context) and 'Data Sources & References' (IMD, NDMA, IPCC).",
-    "Ensure every interactive button, input, tab, selector, and card has a proper data-testid attribute for testing.",
-    "Use Framer Motion / Motion for smooth tab transitions, risk bar expansions, and modal views without jank.",
-    "Ensure both Dark Mode (command-center feel) and Light Mode (scientific paper feel) render crisply with high APCA contrast."
-  ]
+    "1. Update backend /app/backend/models/cities.py and /app/backend/routers/cities.py to include Punjab cities (Ludhiana, Amritsar, Bathinda, Patiala, Jalandhar) and verified coordinates.",
+    "2. Replace the old schematic polygon in /app/frontend/src/pages/Home.tsx with an authentic, dependency-free inline SVG map of India. Use accurate SVG path geometry with recognizable Kashmir/Ladakh crown, Rajasthan bulge, Gujarat Rann & Kathiawar peninsula, southern triangle down to Kanyakumari, and Northeast corridor.",
+    "3. Implement zoom, pan, and reset controls on the SVG map using SVG transform matrices (scale & translate) with smooth transitions.",
+    "4. Add clickable region filters (All India, Punjab & North, West, Central, South, East, Northeast) that zoom and filter the active nodes.",
+    "5. Ensure marker positions strictly use the calibrated coordinate formula to map lat/lng into SVG coordinates without drift.",
+    "6. Keep the existing responsive layout, enhance styling with deep obsidian backgrounds, thermal amber/orange/red risk colors, and glassmorphic headers.",
+    "7. Add authentic source cards for IMD, NDMA, ISRO Bhuvan, and Punjab SAPCC with explicit educational disclaimers.",
+    "8. Ensure every single interactive element has a strict 'data-testid' attribute for end-to-end testing verification."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": {
+    "anti_ai_slop": "Avoid generic SaaS blue/white cards. Use tactile scientific styling with JetBrains Mono data figures, Space Grotesk section titles, crisp 1px borders, and thermal heat glows.",
+    "color_discipline": "Deep Obsidian background (#0A0E17) with high-contrast thermal scale (#EF4444 Very High, #F97316 High, #F59E0B Moderate, #10B981 Low). Never use muddy full-screen gradients.",
+    "testing_compliance": "All buttons, inputs, links, badges, tabs, and map markers MUST have kebab-case data-testid attributes.",
+    "performance": "Dependency-free inline SVG ensures instantaneous rendering with zero tile loading lag or external API rate limits."
+  }
 }
