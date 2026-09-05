@@ -13,192 +13,76 @@
   --font-sans: "Manrope Variable", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
-  /* Warm natural palette */
-  --color-ember-300: #c96b3c;
-  --color-ember-400: #b84f24;
+  --color-ember-300: #F08A52;
+  --color-ember-400: #E15D2F;
+  --color-sindoor-300: #E06B68;
+  --color-sindoor-400: #C7473F;
+  --color-sindoor-500: #A8322F;
+  --color-monsoon-300: #6FAE9A;
+  --color-monsoon-400: #3F806D;
+  --color-turmeric-300: #D7AE4C;
 
-  --color-sindoor-200: #d99a91;
-  --color-sindoor-300: #c76b61;
-  --color-sindoor-400: #a9473f;
-  --color-sindoor-500: #873a35;
-  --color-sindoor-600: #6d302d;
-
-  --color-monsoon-300: #78a594;
-  --color-monsoon-400: #477d69;
-
-  --color-turmeric-300: #c99a3e;
-
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-
-  --color-foreground: var(--foreground);
   --color-background: var(--background);
-
-  /* Sharper geometry */
-  --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
-  --radius-xl: 8px;
-  --radius-2xl: 10px;
-  --radius-3xl: 12px;
-  --radius-4xl: 14px;
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
-
-
-/* =========================================================
-   LIGHT / NATURAL THEME
-   ========================================================= */
 
 :root {
-  --background: #f5f2eb;
-  --foreground: #24211d;
-
-  --card: #fbfaf7;
-  --card-foreground: #24211d;
-
-  --popover: #fbfaf7;
-  --popover-foreground: #24211d;
-
-  --primary: #b84f24;
-  --primary-foreground: #fffaf4;
-
-  --secondary: #ebe6dc;
-  --secondary-foreground: #302c27;
-
-  --muted: #ebe7df;
-  --muted-foreground: #756e65;
-
-  --accent: #e7e1d6;
-  --accent-foreground: #302c27;
-
-  --destructive: #a9473f;
-
-  --border: #ddd7cc;
-  --input: #d6d0c5;
-  --ring: #b84f24;
-
-  --chart-1: #b84f24;
-  --chart-2: #c99a3e;
-  --chart-3: #477d69;
-  --chart-4: #806894;
-  --chart-5: #a9473f;
-
-  --sidebar: #eeeae2;
-  --sidebar-foreground: #302c27;
-  --sidebar-primary: #b84f24;
-  --sidebar-primary-foreground: #fffaf4;
-  --sidebar-accent: #e4ded3;
-  --sidebar-accent-foreground: #302c27;
-  --sidebar-border: #d8d1c5;
-  --sidebar-ring: #b84f24;
+  --background: #080B12;
+  --foreground: #E8EDF5;
+  --card: #0E131D;
+  --card-foreground: #E8EDF5;
+  --popover: #101620;
+  --popover-foreground: #E8EDF5;
+  --primary: #E15D2F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #151C27;
+  --secondary-foreground: #DCE3ED;
+  --muted: #121924;
+  --muted-foreground: #8792A3;
+  --accent: #171F2B;
+  --accent-foreground: #E8EDF5;
+  --destructive: #C7473F;
+  --border: rgba(148, 163, 184, 0.14);
+  --input: rgba(148, 163, 184, 0.18);
+  --ring: #E15D2F;
 }
-
-
-/* =========================================================
-   OPTIONAL DARK THEME
-   ========================================================= */
-
-.dark {
-  --background: #191713;
-  --foreground: #f3eee5;
-
-  --card: #211e19;
-  --card-foreground: #f3eee5;
-
-  --popover: #211e19;
-  --popover-foreground: #f3eee5;
-
-  --primary: #c96b3c;
-  --primary-foreground: #fff8ef;
-
-  --secondary: #2a2620;
-  --secondary-foreground: #eee7dc;
-
-  --muted: #29251f;
-  --muted-foreground: #aaa095;
-
-  --accent: #2b2721;
-  --accent-foreground: #eee7dc;
-
-  --destructive: #a9473f;
-
-  --border: rgba(243, 238, 229, 0.12);
-  --input: rgba(243, 238, 229, 0.14);
-  --ring: #c96b3c;
-
-  --chart-1: #c96b3c;
-  --chart-2: #c99a3e;
-  --chart-3: #477d69;
-  --chart-4: #806894;
-  --chart-5: #a9473f;
-
-  --sidebar: #211e19;
-  --sidebar-foreground: #f3eee5;
-  --sidebar-primary: #c96b3c;
-  --sidebar-primary-foreground: #fff8ef;
-  --sidebar-accent: #2a2620;
-  --sidebar-accent-foreground: #eee7dc;
-  --sidebar-border: rgba(243, 238, 229, 0.12);
-  --sidebar-ring: #c96b3c;
-}
-
-
-/* =========================================================
-   BASE
-   ========================================================= */
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
 
   html {
     @apply font-sans;
     scroll-behavior: smooth;
-    background: #f5f2eb;
+    background: #080B12;
   }
 
   body {
     @apply bg-background text-foreground;
-    background: #f5f2eb;
+    margin: 0;
+    min-width: 320px;
+    background:
+      radial-gradient(circle at 82% 0%, rgba(225, 93, 47, 0.055), transparent 28rem),
+      #080B12;
     font-family: "Manrope Variable", sans-serif;
-
-    /* Makes UI typography feel crisp */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -210,12 +94,12 @@
   select {
     font-family: inherit;
   }
+
+  ::selection {
+    background: rgba(225, 93, 47, 0.28);
+    color: #fff;
+  }
 }
-
-
-/* =========================================================
-   TYPOGRAPHY
-   ========================================================= */
 
 .font-mono {
   font-family: "IBM Plex Mono", monospace;
@@ -227,117 +111,98 @@
 }
 
 .text-gradient {
-  color: #b84f24;
+  color: #E15D2F;
   background: none;
   -webkit-text-fill-color: initial;
 }
 
-
-/* =========================================================
-   LAYOUT
-   ========================================================= */
-
+/* Layout */
 .section-shell {
   max-width: 1480px;
   margin: 0 auto;
-  padding: 72px 20px 0;
+  padding: 56px 20px 0;
+}
+
+@media (min-width: 768px) {
+  .section-shell {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
 }
 
 @media (min-width: 1024px) {
   .section-shell {
+    padding-top: 72px;
     padding-left: 40px;
     padding-right: 40px;
   }
 }
 
-
-/* =========================================================
-   SMALL LABELS
-   ========================================================= */
-
+/* Editorial labels */
 .eyebrow {
-  color: #a05a32;
+  color: #F08A52;
   font-family: "IBM Plex Mono", monospace;
-  font-style: normal;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
   text-transform: uppercase;
 }
 
-
-/* =========================================================
-   GENERAL CARDS
-   ========================================================= */
-
+/* Cards */
 .dashboard-card {
-  background: #fbfaf7;
-  border: 1px solid #ddd7cc;
-  border-radius: 6px;
-
-  /* No floating/glowing AI-card effect */
-  box-shadow: 0 1px 2px rgba(45, 39, 31, 0.04);
-
-  transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+  background: linear-gradient(180deg, #101620 0%, #0D131C 100%);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
 .dashboard-card:hover {
-  border-color: #cfc7ba;
-  box-shadow: 0 4px 14px rgba(45, 39, 31, 0.06);
+  border-color: rgba(225, 93, 47, 0.22);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.23);
 }
-
-
-/* =========================================================
-   THERMAL / MAP PANEL
-   ========================================================= */
 
 .thermal-panel {
-  background: #eae5db;
-  border: 1px solid #d4cdc1;
-  border-radius: 6px;
-
-  box-shadow: none;
+  background:
+    radial-gradient(circle at 85% 10%, rgba(225, 93, 47, 0.13), transparent 16rem),
+    linear-gradient(145deg, #171B21, #11161D);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
 }
 
-
-/* =========================================================
-   KPI CARDS
-   ========================================================= */
-
+/* KPI */
 .kpi-card {
   position: relative;
   min-height: 150px;
   overflow: hidden;
-
-  border: 1px solid #ddd7cc;
-  border-radius: 5px;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 12px;
   padding: 20px;
-
-  background: #fbfaf7;
-
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+  background: #101620;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  border-color: #cfc7ba;
-  box-shadow: 0 5px 16px rgba(45, 39, 31, 0.06);
+  border-color: rgba(225, 93, 47, 0.22);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+}
+
+.kpi-icon,
+.advice-icon {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 9px;
+  background: #151C27;
+  color: #AEB8C7;
 }
 
 .kpi-icon {
-  display: grid;
   width: 32px;
   height: 32px;
-  place-items: center;
-
-  border-radius: 5px;
-  background: #eee9e0;
-  color: #5f584f;
 }
 
 .kpi-icon svg {
@@ -347,44 +212,34 @@
 
 .kpi-label {
   margin-top: 15px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #746d63;
-  letter-spacing: 0.01em;
+  color: #8792A3;
 }
 
 .kpi-value {
   margin-top: 4px;
-
+  color: #F1F5F9;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.045em;
-
-  color: #25221e;
 }
 
 .kpi-note {
   margin-top: 5px;
-
+  color: #687486;
   font-family: "IBM Plex Mono", monospace;
   font-size: 9px;
-  color: #8c8276;
 }
 
-
-/* =========================================================
-   MAP
-   ========================================================= */
-
+/* Map */
 .city-node {
-  transition:
-    opacity 160ms ease,
-    filter 160ms ease;
+  transition: opacity 160ms ease, filter 160ms ease, transform 160ms ease;
 }
 
 .city-node:hover {
-  filter: brightness(0.92);
+  filter: brightness(1.15);
 }
 
 .map-control-button {
@@ -392,85 +247,59 @@
   width: 30px;
   height: 30px;
   place-items: center;
-
-  border: 1px solid #d7d0c5;
-  border-radius: 4px;
-
-  background: #fbfaf7;
-  color: #625b52;
-
-  transition:
-    background 160ms ease,
-    color 160ms ease,
-    border-color 160ms ease;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 7px;
+  background: rgba(10, 14, 23, 0.82);
+  color: #AEB8C7;
+  backdrop-filter: blur(8px);
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 .map-control-button:hover {
-  background: #eee9e0;
-  color: #a9472b;
-  border-color: #cfc6b8;
+  background: #151C27;
+  color: #F08A52;
+  border-color: rgba(225, 93, 47, 0.32);
 }
 
 .map-city-label {
   opacity: 0.72;
-  transition:
-    opacity 160ms ease,
-    fill 160ms ease;
+  transition: opacity 160ms ease, fill 160ms ease;
 }
 
 .map-city-label-active {
-  fill: #28241f;
+  fill: #FFFFFF;
   font-weight: 700;
 }
 
 .map-shell::after {
   position: absolute;
   inset: 12% 14%;
-
-  border: 1px solid rgba(71, 125, 105, 0.12);
+  border: 1px solid rgba(63, 128, 109, 0.14);
   border-radius: 50%;
-
   content: "";
   pointer-events: none;
 }
 
-
-/* =========================================================
-   ADVICE CARDS
-   ========================================================= */
-
+/* Advice */
 .advice-card {
-  border: 1px solid #ddd7cc;
-  border-radius: 5px;
-  padding: 20px;
-
-  background: #fbfaf7;
-
-  transition:
-    transform 180ms ease,
-    background 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+  min-height: 150px;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 12px;
+  padding: 18px;
+  background: #101620;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .advice-card:hover {
   transform: translateY(-2px);
-
-  background: #fffdf9;
-  border-color: #cfc7ba;
-
-  box-shadow: 0 5px 16px rgba(45, 39, 31, 0.05);
+  background: #121925;
+  border-color: rgba(225, 93, 47, 0.22);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
 }
 
 .advice-icon {
-  display: grid;
   width: 34px;
   height: 34px;
-  place-items: center;
-
-  border-radius: 5px;
-  background: #eee9e0;
-  color: #5f584f;
 }
 
 .advice-icon svg {
@@ -479,175 +308,121 @@
 }
 
 .advice-card h3 {
-  margin-top: 20px;
-
+  margin-top: 18px;
+  color: #E8EDF5;
   font-family: "Manrope Variable", sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: -0.01em;
-
-  color: #29251f;
 }
 
 .advice-card p {
-  margin-top: 8px;
-
-  font-size: 12px;
+  margin-top: 7px;
+  color: #8792A3;
+  font-size: 11px;
   line-height: 1.65;
-
-  color: #756e65;
 }
 
-
-/* =========================================================
-   NUMBER / DATA CHIPS
-   ========================================================= */
-
+/* Chips */
 .number-chip {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
   place-items: center;
-
-  border: 1px solid #dfc5b6;
-  border-radius: 5px;
-
-  background: #f3e8df;
-  color: #a9472b;
-
+  border: 1px solid rgba(225, 93, 47, 0.25);
+  border-radius: 9px;
+  background: rgba(225, 93, 47, 0.08);
+  color: #F08A52;
   font-family: "IBM Plex Mono", monospace;
-  font-weight: 600;
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .formula-chip {
-  border-radius: 4px;
-  border: 1px solid #ddd7cc;
-
-  background: #f1eee8;
-
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 7px;
+  background: #151C27;
   padding: 7px 9px;
-
-  color: #756e65;
-
+  color: #9AA5B5;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .formula-chip b {
-  color: #a9472b;
+  color: #F08A52;
 }
 
-
-/* =========================================================
-   SOURCE CARDS
-   ========================================================= */
-
+/* Sources */
 .source-card {
   display: block;
-  min-height: 190px;
-
-  border: 1px solid #ddd7cc;
-  border-radius: 5px;
-
-  padding: 20px;
-
-  background: #fbfaf7;
-
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+  min-height: 180px;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 12px;
+  padding: 18px;
+  background: #101620;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .source-card:hover {
   transform: translateY(-2px);
-
-  border-color: #cfc7ba;
-
-  box-shadow: 0 5px 16px rgba(45, 39, 31, 0.05);
+  border-color: rgba(225, 93, 47, 0.22);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
 }
 
-
-/* =========================================================
-   RISK SLIDER
-   ========================================================= */
-
+/* Calculator */
 .risk-slider {
-  height: 4px;
-
+  width: 100%;
+  height: 5px;
   cursor: pointer;
   appearance: none;
-
   border-radius: 999px;
-
-  background: linear-gradient(
-    90deg,
-    #c96b3c,
-    #a9473f
-  );
+  background: linear-gradient(90deg, #3F806D 0%, #E15D2F 55%, #A8322F 100%);
 }
 
 .risk-slider::-webkit-slider-thumb {
-  height: 15px;
-  width: 15px;
-
+  width: 16px;
+  height: 16px;
   appearance: none;
-
-  border: 2px solid #fbfaf7;
+  border: 3px solid #0E131D;
   border-radius: 999px;
-
-  background: #a9472b;
-
-  box-shadow: 0 0 0 1px #bdaea0;
-
-  transition: transform 120ms ease;
-}
-
-.risk-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.12);
+  background: #F08A52;
+  box-shadow: 0 0 0 1px rgba(240, 138, 82, 0.55);
 }
 
 .risk-slider::-moz-range-thumb {
-  height: 15px;
-  width: 15px;
-
-  border: 2px solid #fbfaf7;
+  width: 16px;
+  height: 16px;
+  border: 3px solid #0E131D;
   border-radius: 999px;
-
-  background: #a9472b;
-
-  box-shadow: 0 0 0 1px #bdaea0;
+  background: #F08A52;
+  box-shadow: 0 0 0 1px rgba(240, 138, 82, 0.55);
 }
 
-
-/* =========================================================
-   NATURAL UI DETAILS
-   ========================================================= */
-
-/* Thin separators feel more editorial than card-heavy UI */
+/* Charts and separators */
 hr {
   border: 0;
-  border-top: 1px solid #ddd7cc;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
 }
 
-/* Selection color */
-::selection {
-  background: #e5c7b5;
-  color: #30251e;
-}
-
-/* Cleaner focus states */
 :focus-visible {
-  outline: 2px solid rgba(184, 79, 36, 0.35);
+  outline: 2px solid rgba(240, 138, 82, 0.55);
   outline-offset: 2px;
 }
 
+@media (max-width: 639px) {
+  .section-shell {
+    padding-top: 44px;
+  }
 
-/* =========================================================
-   REDUCE MOTION
-   ========================================================= */
+  .dashboard-card,
+  .thermal-panel {
+    border-radius: 12px;
+  }
+
+  .source-card {
+    min-height: 150px;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
