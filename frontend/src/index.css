@@ -116,30 +116,108 @@ body { background: #141414; }
 .eyebrow { color: #FFC542; font-family: 'Lora Variable', serif; font-style: italic; font-size: 13px; font-weight: 500; letter-spacing: .01em; }
 .dashboard-card { background: linear-gradient(145deg, rgba(30,30,30,.9), rgba(20,20,20,.76)); border: 1px solid rgba(245,245,245,.08); box-shadow: 0 18px 50px rgba(0,0,0,.25); }
 .thermal-panel { background: radial-gradient(circle at 85% 10%, rgba(229,52,42,.2), transparent 32%), linear-gradient(145deg, #242424, #181818); border: 1px solid rgba(255,90,31,.25); box-shadow: 0 24px 70px rgba(0,0,0,.35); }
-.kpi-card { position: relative; min-height: 150px; overflow: hidden; border: 1px solid rgba(245,245,245,.08); border-radius: 10px; padding: 20px; background: rgba(30,30,30,.72); transition: transform .25s ease, border-color .25s ease; }
+.kpi-card { position: relative; min-height: 150px; overflow: hidden; border: 1px solid rgba(245,245,245,.08); border-radius: 20px; padding: 20px; background: rgba(30,30,30,.72); transition: transform .25s ease, border-color .25s ease; }
 .kpi-card:hover { transform: translateY(-3px); border-color: rgba(255,90,31,.35); }
-.kpi-icon { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 9px; background: rgba(245,245,245,.06); }
+.kpi-icon { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 14px; background: rgba(245,245,245,.06); }
 .kpi-icon svg { width: 17px; height: 17px; }
 .kpi-label { margin-top: 15px; font-size: 12.5px; color: #A3A3A3; }
 .kpi-value { margin-top: 4px; font-family: 'Lora Variable', serif; font-size: 32px; font-weight: 600; letter-spacing: -.01em; color: #F5F5F5; }
 .kpi-note { margin-top: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; }
 .city-node { transition: filter .2s ease; }
 .city-node:hover { filter: brightness(1.25); }
-.map-control-button { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 6px; color: #d4d4d4; transition: background .2s ease, color .2s ease; }
+.map-control-button { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 12px; color: #d4d4d4; transition: background .2s ease, color .2s ease; }
 .map-control-button:hover { background: rgba(255,90,31,.18); color: #FF7A45; }
 .map-city-label { opacity: .8; transition: opacity .2s ease, fill .2s ease; }
 .map-city-label-active { fill: #FFFFFF; font-weight: 700; }
 .map-shell:after { position: absolute; inset: 12% 14%; border: 1px solid rgba(47,177,112,.12); border-radius: 50%; content: ''; pointer-events: none; }
-.advice-card { border: 1px solid rgba(245,245,245,.08); border-radius: 10px; padding: 20px; background: rgba(30,30,30,.66); transition: transform .25s ease, background .25s ease; }
+.advice-card { border: 1px solid rgba(245,245,245,.08); border-radius: 20px; padding: 20px; background: rgba(30,30,30,.66); transition: transform .25s ease, background .25s ease, box-shadow .25s ease; }
 .advice-card:hover { transform: translateY(-3px); background: rgba(38,38,38,.85); }
 .advice-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: rgba(255,90,31,.1); }
 .advice-icon svg { width: 18px; height: 18px; }
 .advice-card h3 { margin-top: 20px; font-family: 'Lora Variable', serif; font-size: 15px; font-weight: 600; color: #F5F5F5; }
 .advice-card p { margin-top: 8px; font-size: 12px; line-height: 1.6; color: #A3A3A3; }
-.number-chip { display: grid; width: 32px; height: 32px; flex-shrink: 0; place-items: center; border-radius: 9px; background: rgba(255,90,31,.15); color: #FF7A45; font-family: 'Lora Variable', serif; font-weight: 600; font-size: 12px; }
-.formula-chip { border-radius: 7px; border: 1px solid rgba(245,245,245,.08); background: rgba(245,245,245,.04); padding: 7px 9px; color: #A3A3A3; }
+.number-chip { display: grid; width: 32px; height: 32px; flex-shrink: 0; place-items: center; border-radius: 14px; background: rgba(255,90,31,.15); color: #FF7A45; font-family: 'Lora Variable', serif; font-weight: 600; font-size: 12px; }
+.formula-chip { border-radius: 12px; border: 1px solid rgba(245,245,245,.08); background: rgba(245,245,245,.04); padding: 7px 9px; color: #A3A3A3; }
 .formula-chip b { color: #FF7A45; }
-.source-card { display: block; min-height: 190px; border: 1px solid rgba(245,245,245,.08); border-radius: 10px; padding: 20px; background: rgba(30,30,30,.66); transition: transform .25s ease, border-color .25s ease; }
+.source-card { display: block; min-height: 190px; border: 1px solid rgba(245,245,245,.08); border-radius: 20px; padding: 20px; background: rgba(30,30,30,.66); transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
 .source-card:hover { transform: translateY(-3px); border-color: rgba(255,90,31,.4); }
 .risk-slider { height: 4px; cursor: pointer; appearance: none; border-radius: 999px; background: linear-gradient(90deg, #FF5A1F, #E5342A); }
 .risk-slider::-webkit-slider-thumb { height: 16px; width: 16px; appearance: none; border-radius: 999px; border: 3px solid #1E1E1E; background: #FF7A45; box-shadow: 0 0 0 1px rgba(255,122,69,.5); }
+
+/* ---- Rounded corners, extra polish, and motion ---- */
+
+.dashboard-card, .thermal-panel, .advice-card, .source-card, .kpi-card {
+  border-radius: 20px;
+}
+
+.dashboard-card, .thermal-panel {
+  background-image:
+    linear-gradient(145deg, rgba(30,30,30,.9), rgba(20,20,20,.76)),
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: auto, 28px 28px, 28px 28px;
+}
+
+.kpi-card:hover, .advice-card:hover, .source-card:hover {
+  box-shadow: 0 12px 32px rgba(255,90,31,.14);
+}
+
+.map-control-button, .risk-slider::-webkit-slider-thumb {
+  transition: transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.map-control-button:active { transform: scale(.92); }
+
+button, .risk-slider::-webkit-slider-thumb {
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.number-chip {
+  animation: chip-pop .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+@keyframes chip-pop {
+  from { transform: scale(.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard-card, .thermal-panel, .kpi-card, .advice-card, .source-card {
+  animation: fade-in-up .6s ease both;
+}
+
+.kpi-card:nth-of-type(1) { animation-delay: .05s; }
+.kpi-card:nth-of-type(2) { animation-delay: .12s; }
+.kpi-card:nth-of-type(3) { animation-delay: .19s; }
+.kpi-card:nth-of-type(4) { animation-delay: .26s; }
+.advice-card:nth-of-type(1) { animation-delay: .05s; }
+.advice-card:nth-of-type(2) { animation-delay: .12s; }
+.advice-card:nth-of-type(3) { animation-delay: .19s; }
+.advice-card:nth-of-type(4) { animation-delay: .26s; }
+.source-card:nth-of-type(1) { animation-delay: .05s; }
+.source-card:nth-of-type(2) { animation-delay: .12s; }
+.source-card:nth-of-type(3) { animation-delay: .19s; }
+.source-card:nth-of-type(4) { animation-delay: .26s; }
+.source-card:nth-of-type(5) { animation-delay: .33s; }
+
+.city-node {
+  animation: node-breathe 2.6s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes node-breathe {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.35); }
+}
+
+.kpi-value, .text-gradient {
+  background-size: 200% auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-card, .thermal-panel, .kpi-card, .advice-card, .source-card, .number-chip, .city-node {
+    animation: none !important;
+  }
+}
