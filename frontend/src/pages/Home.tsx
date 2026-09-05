@@ -53,7 +53,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiPost } from "@/lib/api";
+import { fetchLiveCities, fetchRealTrends } from "@/lib/liveWeather";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -110,8 +111,8 @@ const navItems = [
   ["calculator", "Calculator"], ["safety", "Safety"], ["methodology", "Methodology"], ["sources", "Sources"],
 ];
 
-const fetchCities = () => apiGet<CityRisk[]>("/heatmap/live-cities");
-const fetchTrends = () => apiGet<TrendPoint[]>("/heatmap/real-trends");
+const fetchCities = fetchLiveCities;
+const fetchTrends = fetchRealTrends;
 
 type MapLayer = "cartographic" | "thermal" | "grid";
 
@@ -212,7 +213,27 @@ export default function Home() {
   const comparison = compareIds.map((id) => cities.find((city) => city.id === id)).filter((city): city is CityRisk => Boolean(city));
   const peakTemperature = cities.length ? Math.max(...cities.map((city) => city.max_temp)).toFixed(1) : "—";
   const previewScore = Math.round(((calcValues.max_temp - 30) / 18 * 100) * .3 + Math.min(100, calcValues.heatwave_days / 24 * 100) * .25 + calcValues.pop_exposure * .2 + calcValues.urbanization * .15 + (100 - calcValues.vegetation_cover) * .1);
-  const calculateMutation = useMutation({ mutationFn: (payload: RiskCalculationRequest) => apiPost<RiskCalculationResponse>("/heatmap/calculate", payload) });
+  const calculateMutation = useMutation({
+    mutationFn: async (payload: RiskCalculationRequest): Promise<RiskCalculationResponse> => {
+      const temperatureIndex = Math.max(0, Math.min(100, (payload.max_temp - 30) / 18 * 100));
+      const frequencyIndex = Math.min(100, payload.heatwave_days / 24 * 100);
+      const components = {
+        temperature: Number((temperatureIndex * .30).toFixed(1)),
+        frequency: Number((frequencyIndex * .25).toFixed(1)),
+        population: Number((payload.pop_exposure * .20).toFixed(1)),
+        urbanization: Number((payload.urbanization * .15).toFixed(1)),
+        vegetation: Number(((100 - payload.vegetation_cover) * .10).toFixed(1)),
+      };
+      const score = Math.round(Object.values(components).reduce((a, b) => a + b, 0));
+      const tier: RiskTier = score >= 75 ? "very_high" : score >= 60 ? "high" : score >= 40 ? "moderate" : "low";
+      return {
+        score,
+        tier,
+        components,
+        formula: "30% temperature + 25% hot-day frequency + 20% population exposure + 15% urbanisation + 10% vegetation deficit",
+      };
+    },
+  });
 
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   const selectCity = (id: string) => { setSelectedId(id); setTimeout(() => scrollTo("map"), 50); };
@@ -239,7 +260,7 @@ export default function Home() {
             {navItems.map(([id, label]) => <a key={id} href={`#${id}`} className="rounded-lg px-2.5 py-2 text-[11px] font-medium text-slate-400 transition-colors hover:bg-white/[.06] hover:text-white" data-testid={`nav-link-${id}`}>{label}</a>)}
           </nav>
           <div className="flex items-center gap-2">
-            <span className="hidden items-center gap-1.5 rounded-full border border-ember-400/20 bg-ember-400/[.08] px-2.5 py-1.5 text-[10px] font-semibold  text-ember-300 sm:flex" data-testid="demo-data-badge"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ember-400" /> Demo Data</span>
+            <span className="hidden items-center gap-1.5 rounded-full border border-ember-400/20 bg-ember-400/[.08] px-2.5 py-1.5 text-[10px] font-semibold  text-ember-300 sm:flex" data-testid="demo-data-badge"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ember-400" /> Live Weather Data</span>
             <Button variant="outline" size="icon-sm" className="border-white/10 bg-white/[.04] text-slate-300 hover:bg-white/10 hover:text-white xl:hidden" onClick={() => setMobileMenu((open) => !open)} data-testid="mobile-menu-toggle-button" aria-label="Toggle menu">{mobileMenu ? <X /> : <Menu />}</Button>
           </div>
         </div>
@@ -255,7 +276,7 @@ export default function Home() {
               <h1 className="max-w-4xl font-heading text-4xl font-bold leading-[1.05] tracking-[-.04em] text-white sm:text-6xl lg:text-[72px]" data-testid="hero-title">Digital Heatwave<br /><span className="text-gradient text-red-400">Risk Mapping</span><br /><span className="text-slate-400">for Indian Cities</span></h1>
               <p className="mt-7 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg" data-testid="hero-subtitle">Using digital technology to visualize and understand urban heatwave risk. An interactive Environmental Studies CA1 project for clearer climate awareness.</p>
               <div className="mt-8 flex flex-wrap gap-3"><Button onClick={() => scrollTo("map")} className="h-11 bg-ember-400 px-5 text-sm text-white shadow-lg shadow-orange-950/30 hover:bg-ember-400" data-testid="hero-explore-map-button"><MapPin className="mr-2 h-4 w-4" /> Explore risk map <ChevronRight className="ml-1 h-4 w-4" /></Button><Button onClick={() => scrollTo("calculator")} variant="outline" className="h-11 border-white/10 bg-white/[.04] px-5 text-slate-200 hover:bg-white/10" data-testid="hero-calculator-button"><Calculator className="mr-2 h-4 w-4" /> Try the calculator</Button></div>
-              <div className="mt-12 flex flex-wrap gap-8 border-t border-white/[.08] pt-6"><div><p className="font-mono text-2xl font-bold text-white">{cities.length || 25}</p><p className="mt-1 text-[10px]  text-slate-500">Cities monitored</p></div><div><p className="font-mono text-2xl font-bold text-ember-400">{highCount}</p><p className="mt-1 text-[10px]  text-slate-500">Critical hotspots</p></div><div><p className="font-mono text-2xl font-bold text-white">{peakTemperature}°</p><p className="mt-1 text-[10px]  text-slate-500">Demo peak °C</p></div></div>
+              <div className="mt-12 flex flex-wrap gap-8 border-t border-white/[.08] pt-6"><div><p className="font-mono text-2xl font-bold text-white">{cities.length || 25}</p><p className="mt-1 text-[10px]  text-slate-500">Cities monitored</p></div><div><p className="font-mono text-2xl font-bold text-ember-400">{highCount}</p><p className="mt-1 text-[10px]  text-slate-500">Critical hotspots</p></div><div><p className="font-mono text-2xl font-bold text-white">{peakTemperature}°</p><p className="mt-1 text-[10px]  text-slate-500">Live peak °C</p></div></div>
             </div>
             <div className="relative mx-auto w-full max-w-[500px] lg:ml-auto" data-testid="hero-signal-panel">
               <div className="thermal-panel relative overflow-hidden rounded-3xl p-6 sm:p-8"><div className="absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px)", backgroundSize: "32px 32px" }} /><div className="relative"><div className="flex items-start justify-between"><div><p className="eyebrow text-ember-300">National risk signal</p><p className="mt-2 font-heading text-5xl font-bold text-white">{averageScore}<span className="text-2xl text-slate-500">/100</span></p></div><span className="rounded-xl border border-sindoor-400/20 bg-sindoor-400/10 p-3 text-sindoor-300"><Activity className="h-6 w-6" /></span></div><div className="mt-8 h-32"><ResponsiveContainer width="100%" height="100%"><AreaChart data={trends}><defs><linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#C1440E" stopOpacity={.5} /><stop offset="100%" stopColor="#C1440E" stopOpacity={0} /></linearGradient></defs><Area type="monotone" dataKey="day_temperature" stroke="#D97A3E" strokeWidth={2} fill="url(#heroFill)" dot={false} /></AreaChart></ResponsiveContainer></div><div className="flex items-center justify-between border-t border-white/[.08] pt-4 text-xs"><span className="text-slate-400">10-year temperature trend</span><span className="flex items-center gap-1.5 font-mono text-ember-300"><ArrowUpRight className="h-3.5 w-3.5" /> +2.4°C index</span></div></div></div><div className="absolute -bottom-4 -left-5 rounded-xl border border-monsoon-400/20 bg-[#111827] px-4 py-3 shadow-2xl"><p className="text-[10px]  text-slate-500">Coverage status</p><p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-monsoon-300"><span className="h-1.5 w-1.5 rounded-full bg-monsoon-400" /> Ready for exploration</p></div>
