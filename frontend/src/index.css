@@ -13,14 +13,14 @@
   --font-sans: "Manrope Variable", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
-  --color-ember-300: #F08A52;
-  --color-ember-400: #E15D2F;
-  --color-sindoor-300: #E06B68;
-  --color-sindoor-400: #C7473F;
-  --color-sindoor-500: #A8322F;
-  --color-monsoon-300: #6FAE9A;
-  --color-monsoon-400: #3F806D;
-  --color-turmeric-300: #D7AE4C;
+  --color-ember-300: #9FB7C5;
+  --color-ember-400: #7896A8;
+  --color-sindoor-300: #C98B87;
+  --color-sindoor-400: #B96C67;
+  --color-sindoor-500: #A85A56;
+  --color-monsoon-300: #79AFA0;
+  --color-monsoon-400: #4F8778;
+  --color-turmeric-300: #B9A66A;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -49,18 +49,18 @@
   --card-foreground: #E8EDF5;
   --popover: #101620;
   --popover-foreground: #E8EDF5;
-  --primary: #E15D2F;
-  --primary-foreground: #FFFFFF;
+  --primary: #7896A8;
+  --primary-foreground: #F7FAFC;
   --secondary: #151C27;
   --secondary-foreground: #DCE3ED;
   --muted: #121924;
   --muted-foreground: #8792A3;
   --accent: #171F2B;
   --accent-foreground: #E8EDF5;
-  --destructive: #C7473F;
+  --destructive: #B96C67;
   --border: rgba(148, 163, 184, 0.14);
   --input: rgba(148, 163, 184, 0.18);
-  --ring: #E15D2F;
+  --ring: #7896A8;
 }
 
 @layer base {
@@ -79,9 +79,7 @@
     @apply bg-background text-foreground;
     margin: 0;
     min-width: 320px;
-    background:
-      radial-gradient(circle at 82% 0%, rgba(225, 93, 47, 0.055), transparent 28rem),
-      #080B12;
+    background: #080B12;
     font-family: "Manrope Variable", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -96,7 +94,7 @@
   }
 
   ::selection {
-    background: rgba(225, 93, 47, 0.28);
+    background: rgba(120, 150, 168, 0.25);
     color: #fff;
   }
 }
@@ -111,7 +109,7 @@
 }
 
 .text-gradient {
-  color: #E15D2F;
+  color: #AFC1CC;
   background: none;
   -webkit-text-fill-color: initial;
 }
@@ -140,7 +138,7 @@
 
 /* Editorial labels */
 .eyebrow {
-  color: #F08A52;
+  color: #8FA8B7;
   font-family: "IBM Plex Mono", monospace;
   font-size: 9px;
   font-weight: 700;
@@ -159,14 +157,12 @@
 }
 
 .dashboard-card:hover {
-  border-color: rgba(225, 93, 47, 0.22);
+  border-color: rgba(120, 150, 168, 0.28);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.23);
 }
 
 .thermal-panel {
-  background:
-    radial-gradient(circle at 85% 10%, rgba(225, 93, 47, 0.13), transparent 16rem),
-    linear-gradient(145deg, #171B21, #11161D);
+  background: linear-gradient(145deg, #151A21, #10151C);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
@@ -186,7 +182,7 @@
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(225, 93, 47, 0.22);
+  border-color: rgba(120, 150, 168, 0.28);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
 }
 
@@ -257,8 +253,8 @@
 
 .map-control-button:hover {
   background: #151C27;
-  color: #F08A52;
-  border-color: rgba(225, 93, 47, 0.32);
+  color: #AFC1CC;
+  border-color: rgba(120, 150, 168, 0.32);
 }
 
 .map-city-label {
@@ -274,7 +270,7 @@
 .map-shell::after {
   position: absolute;
   inset: 12% 14%;
-  border: 1px solid rgba(63, 128, 109, 0.14);
+  border: 1px solid rgba(79, 135, 120, 0.14);
   border-radius: 50%;
   content: "";
   pointer-events: none;
@@ -293,7 +289,7 @@
 .advice-card:hover {
   transform: translateY(-2px);
   background: #121925;
-  border-color: rgba(225, 93, 47, 0.22);
+  border-color: rgba(120, 150, 168, 0.28);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
 }
 
@@ -329,10 +325,10 @@
   height: 34px;
   flex-shrink: 0;
   place-items: center;
-  border: 1px solid rgba(225, 93, 47, 0.25);
+  border: 1px solid rgba(120, 150, 168, 0.25);
   border-radius: 9px;
-  background: rgba(225, 93, 47, 0.08);
-  color: #F08A52;
+  background: rgba(120, 150, 168, 0.08);
+  color: #AFC1CC;
   font-family: "IBM Plex Mono", monospace;
   font-size: 10px;
   font-weight: 700;
@@ -349,7 +345,7 @@
 }
 
 .formula-chip b {
-  color: #F08A52;
+  color: #AFC1CC;
 }
 
 /* Sources */
@@ -365,7 +361,7 @@
 
 .source-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(225, 93, 47, 0.22);
+  border-color: rgba(120, 150, 168, 0.28);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
 }
 
@@ -376,7 +372,7 @@
   cursor: pointer;
   appearance: none;
   border-radius: 999px;
-  background: linear-gradient(90deg, #3F806D 0%, #E15D2F 55%, #A8322F 100%);
+  background: linear-gradient(90deg, #4F8778 0%, #7896A8 55%, #8C6C69 100%);
 }
 
 .risk-slider::-webkit-slider-thumb {
@@ -385,8 +381,8 @@
   appearance: none;
   border: 3px solid #0E131D;
   border-radius: 999px;
-  background: #F08A52;
-  box-shadow: 0 0 0 1px rgba(240, 138, 82, 0.55);
+  background: #AFC1CC;
+  box-shadow: 0 0 0 1px rgba(120, 150, 168, 0.55);
 }
 
 .risk-slider::-moz-range-thumb {
@@ -394,8 +390,8 @@
   height: 16px;
   border: 3px solid #0E131D;
   border-radius: 999px;
-  background: #F08A52;
-  box-shadow: 0 0 0 1px rgba(240, 138, 82, 0.55);
+  background: #AFC1CC;
+  box-shadow: 0 0 0 1px rgba(120, 150, 168, 0.55);
 }
 
 /* Charts and separators */
@@ -405,7 +401,7 @@ hr {
 }
 
 :focus-visible {
-  outline: 2px solid rgba(240, 138, 82, 0.55);
+  outline: 2px solid rgba(120, 150, 168, 0.55);
   outline-offset: 2px;
 }
 
