@@ -221,3 +221,88 @@ button, .risk-slider::-webkit-slider-thumb {
     animation: none !important;
   }
 }
+
+/* ---- More life: ambient glow, glowing numbers, shimmer, punchier hovers ---- */
+
+body {
+  background:
+    radial-gradient(600px circle at 15% 0%, rgba(255,90,31,.08), transparent 55%),
+    radial-gradient(500px circle at 100% 30%, rgba(255,90,31,.06), transparent 50%),
+    #141414;
+  background-attachment: fixed;
+}
+
+.thermal-panel {
+  position: relative;
+  overflow: hidden;
+}
+.thermal-panel::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(255,90,31,.18), transparent 60%);
+  animation: drift 9s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes drift {
+  0%, 100% { transform: translate(-6%, -4%) scale(1); }
+  50% { transform: translate(6%, 5%) scale(1.15); }
+}
+
+.kpi-value {
+  text-shadow: 0 0 18px rgba(255,90,31,0);
+  animation: fade-in-up .6s ease both, glow-pulse 3.5s ease-in-out .6s infinite;
+}
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: 0 0 0px rgba(255,90,31,0); }
+  50% { text-shadow: 0 0 16px rgba(255,90,31,.35); }
+}
+
+.kpi-card:hover, .advice-card:hover, .source-card:hover {
+  transform: translateY(-5px) scale(1.015);
+  box-shadow: 0 16px 40px rgba(255,90,31,.2);
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+}
+button::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: skewX(-20deg);
+  transition: left .6s ease;
+}
+button:hover::after { left: 130%; }
+
+.map-city-label-active {
+  animation: label-pop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes label-pop {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.risk-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 6px rgba(255,122,69,.25);
+}
+
+.eyebrow {
+  position: relative;
+  display: inline-block;
+}
+
+::selection {
+  background: rgba(255,90,31,.35);
+  color: #FFFFFF;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thermal-panel::before, .kpi-value, button::after, .map-city-label-active {
+    animation: none !important;
+    transition: none !important;
+  }
+}
