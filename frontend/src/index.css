@@ -306,3 +306,68 @@ button:hover::after { left: 130%; }
     transition: none !important;
   }
 }
+
+/* ---- Glassmorphism pass: frosted glass, vibrant blurred backdrop, glowing edges ---- */
+
+body {
+  background: #0D0D0F;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38vw circle at 8% 8%, rgba(255,90,31,.55), transparent 60%),
+    radial-gradient(32vw circle at 92% 18%, rgba(255,197,66,.4), transparent 60%),
+    radial-gradient(40vw circle at 25% 85%, rgba(47,177,112,.32), transparent 60%),
+    radial-gradient(34vw circle at 85% 90%, rgba(229,52,42,.35), transparent 60%);
+  filter: blur(70px) saturate(160%);
+  animation: aurora-drift 18s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(2%,-3%) scale(1.08); }
+  100% { transform: translate(-2%,2%) scale(1); }
+}
+#root { position: relative; z-index: 1; }
+
+.dashboard-card, .thermal-panel, .kpi-card, .advice-card, .source-card {
+  background: rgba(30,28,26,.45) !important;
+  background-image: none !important;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.kpi-card:hover, .advice-card:hover, .source-card:hover {
+  background: rgba(38,35,32,.55) !important;
+  border-color: rgba(255,90,31,.5) !important;
+  box-shadow: 0 16px 40px rgba(255,90,31,.25), inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+.kpi-icon, .advice-icon, .number-chip, .map-control-button {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+.formula-chip {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+}
+
+nav, header {
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none !important; }
+}
