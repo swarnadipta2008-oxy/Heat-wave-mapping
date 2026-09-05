@@ -86,7 +86,7 @@ export async function fetchLiveCities(): Promise<CityRisk[]> {
     const highs = (daily.temperature_2m_max ?? []).filter((v: number | null): v is number => v !== null);
     const recent = highs.slice(0, 7);
     const maxTemp = recent.length ? Math.max(...recent) : 0;
-    const hotDays = recent.filter(v => v >= 40).length;
+    const hotDays = recent.filter((v: number) => v >= 40).length;
     const [id, name, state, lat, lng, pop, urban, vegetation] = base;
     const { score, tier } = scoreCity(maxTemp, hotDays, pop, urban, vegetation);
     return {
