@@ -54,6 +54,7 @@ import {
   YAxis,
 } from "recharts";
 import { apiGet, apiPost } from "@/lib/api";
+import { fetchLiveCities, fetchRealTrends } from "@/lib/liveWeather";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -112,6 +113,11 @@ const navItems = [
 
 const fetchCities = () => apiGet<CityRisk[]>("/heatmap/cities");
 const fetchTrends = () => apiGet<TrendPoint[]>("/heatmap/trends");
+
+// Try the project's own backend first; if it's unreachable or slow (e.g. the free-tier
+// server is asleep), fall back to live public weather data so the site never sits blank.
+const fetchCitiesLive = () => fetchCities().catch(() => fetchLiveCities());
+const fetchTrendsLive = () => fetchTrends().catch(() => fetchRealTrends());
 
 type MapLayer = "cartographic" | "thermal" | "grid";
 
@@ -183,8 +189,20 @@ function MetricBar({ label, value, display, color = "#C1440E" }: { label: string
 }
 
 export default function Home() {
-  const citiesQuery = useQuery({ queryKey: ["heatmap-cities"], queryFn: fetchCities, retry: false });
-  const trendsQuery = useQuery({ queryKey: ["heatmap-trends"], queryFn: fetchTrends, retry: false });
+  const citiesQuery = useQuery({
+    queryKey: ["heatmap-cities"],
+    queryFn: fetchCitiesLive,
+    retry: false,
+    refetchInterval: 30 * 60 * 1000, // refresh live weather every 30 minutes
+    staleTime: 15 * 60 * 1000,
+  });
+  const trendsQuery = useQuery({
+    queryKey: ["heatmap-trends"],
+    queryFn: fetchTrendsLive,
+    retry: false,
+    refetchInterval: 60 * 60 * 1000, // trends change slowly; hourly is plenty
+    staleTime: 30 * 60 * 1000,
+  });
   const cities = citiesQuery.data ?? [];
   const trends = trendsQuery.data ?? [];
   const [selectedId, setSelectedId] = useState("delhi");
