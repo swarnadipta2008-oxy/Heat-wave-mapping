@@ -109,9 +109,9 @@
 }
 
 .text-gradient {
-  color: #AFC1CC;
+  color: #C1440E;
   background: none;
-  -webkit-text-fill-color: initial;
+  -webkit-text-fill-color: #C1440E;
 }
 
 .section-shell {
