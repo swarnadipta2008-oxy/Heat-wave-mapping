@@ -204,12 +204,7 @@ button, .risk-slider::-webkit-slider-thumb {
 .source-card:nth-of-type(5) { animation-delay: .33s; }
 
 .city-node {
-  animation: node-breathe 2.6s ease-in-out infinite;
   transform-origin: center;
-}
-@keyframes node-breathe {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.35); }
 }
 
 .kpi-value, .text-gradient {
@@ -236,26 +231,9 @@ body {
   position: relative;
   overflow: hidden;
 }
-.thermal-panel::before {
-  content: '';
-  position: absolute;
-  inset: -40%;
-  background: radial-gradient(circle, rgba(255,90,31,.18), transparent 60%);
-  animation: drift 9s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes drift {
-  0%, 100% { transform: translate(-6%, -4%) scale(1); }
-  50% { transform: translate(6%, 5%) scale(1.15); }
-}
 
 .kpi-value {
-  text-shadow: 0 0 18px rgba(255,90,31,0);
-  animation: fade-in-up .6s ease both, glow-pulse 3.5s ease-in-out .6s infinite;
-}
-@keyframes glow-pulse {
-  0%, 100% { text-shadow: 0 0 0px rgba(255,90,31,0); }
-  50% { text-shadow: 0 0 16px rgba(255,90,31,.35); }
+  animation: fade-in-up .6s ease both;
 }
 
 .kpi-card:hover, .advice-card:hover, .source-card:hover {
@@ -263,20 +241,7 @@ body {
   box-shadow: 0 16px 40px rgba(255,90,31,.2);
 }
 
-button {
-  position: relative;
-  overflow: hidden;
-}
-button::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -60%;
-  width: 40%; height: 100%;
-  background: linear-gradient(115deg, transparent, rgba(255,255,255,.35), transparent);
-  transform: skewX(-20deg);
-  transition: left .6s ease;
-}
-button:hover::after { left: 130%; }
+
 
 .map-city-label-active {
   animation: label-pop .4s cubic-bezier(.34,1.56,.64,1) both;
@@ -320,25 +285,18 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(38vw circle at 8% 8%, rgba(255,90,31,.55), transparent 60%),
-    radial-gradient(32vw circle at 92% 18%, rgba(255,197,66,.4), transparent 60%),
-    radial-gradient(40vw circle at 25% 85%, rgba(47,177,112,.32), transparent 60%),
-    radial-gradient(34vw circle at 85% 90%, rgba(229,52,42,.35), transparent 60%);
-  filter: blur(70px) saturate(160%);
-  animation: aurora-drift 18s ease-in-out infinite alternate;
-}
-@keyframes aurora-drift {
-  0%   { transform: translate(0,0) scale(1); }
-  50%  { transform: translate(2%,-3%) scale(1.08); }
-  100% { transform: translate(-2%,2%) scale(1); }
+    radial-gradient(38vw circle at 8% 8%, rgba(255,90,31,.4), transparent 60%),
+    radial-gradient(32vw circle at 92% 18%, rgba(255,197,66,.3), transparent 60%),
+    radial-gradient(40vw circle at 25% 85%, rgba(47,177,112,.24), transparent 60%),
+    radial-gradient(34vw circle at 85% 90%, rgba(229,52,42,.26), transparent 60%);
 }
 #root { position: relative; z-index: 1; }
 
 .dashboard-card, .thermal-panel, .kpi-card, .advice-card, .source-card {
   background: rgba(30,28,26,.45) !important;
   background-image: none !important;
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   border: 1px solid rgba(255,255,255,.14) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
 }
@@ -350,22 +308,18 @@ body::before {
 }
 
 .kpi-icon, .advice-icon, .number-chip, .map-control-button {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   background: rgba(255,255,255,.08) !important;
   border: 1px solid rgba(255,255,255,.1);
 }
 
 .formula-chip {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   background: rgba(255,255,255,.04) !important;
   border: 1px solid rgba(255,255,255,.1) !important;
 }
 
 nav, header {
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
 }
 
 @media (prefers-reduced-motion: reduce) {
