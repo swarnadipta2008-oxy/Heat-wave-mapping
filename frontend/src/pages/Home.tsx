@@ -1,38 +1,291 @@
 import { useMemo, useState } from "react";
-import { Activity, ArrowDownRight, ArrowUpRight, Database, MapPin, Search, ShieldAlert, Thermometer, Users } from "lucide-react";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+} from "react-simple-maps";
 
-type Risk = "Extreme" | "High" | "Moderate" | "Low";
-type City = { name:string; state:string; coordinates:[number,number]; risk:Risk; temperature:number; population:string; heatDays:number; };
-const INDIA_GEO_URL="https://raw.githubusercontent.com/AbhinavSwami28/india-official-geojson/main/india-states-simplified.geojson";
+type City = {
+  name: string;
+  state: string;
+  coordinates: [number, number];
+  risk: "Extreme" | "High" | "Moderate" | "Low";
+  temperature: number;
+};
 
-const cities:City[]=[
-["Delhi","Delhi",[77.1025,28.7041],"Extreme",45,"33.8M",18],["Amritsar","Punjab",[74.8723,31.634],"High",43,"1.5M",12],["Ludhiana","Punjab",[75.8573,30.901],"High",43,"1.8M",12],["Chandigarh","Chandigarh",[76.7794,30.7333],"High",42,"1.1M",10],["Jaipur","Rajasthan",[75.7873,26.9124],"Extreme",46,"4.0M",19],["Jodhpur","Rajasthan",[73.0243,26.2389],"Extreme",47,"1.5M",21],["Kota","Rajasthan",[75.8648,25.2138],"Extreme",46,"1.4M",19],["Lucknow","Uttar Pradesh",[80.9462,26.8467],"Extreme",45,"3.7M",18],["Kanpur","Uttar Pradesh",[80.3319,26.4499],"Extreme",45,"3.2M",18],["Agra","Uttar Pradesh",[78.0081,27.1767],"Extreme",46,"1.9M",19],["Varanasi","Uttar Pradesh",[82.9739,25.3176],"High",44,"1.7M",15],["Prayagraj","Uttar Pradesh",[81.8463,25.4358],"Extreme",46,"1.5M",19],["Dehradun","Uttarakhand",[78.0322,30.3165],"Moderate",39,"0.8M",7],
-["Mumbai","Maharashtra",[72.8777,19.076],"High",34,"21.7M",9],["Pune","Maharashtra",[73.8567,18.5204],"Moderate",36,"7.3M",7],["Nagpur","Maharashtra",[79.0882,21.1458],"Extreme",45,"2.9M",18],["Nashik","Maharashtra",[73.7898,19.9975],"High",39,"1.7M",10],["Ahmedabad","Gujarat",[72.5714,23.0225],"Extreme",46,"8.7M",20],["Surat","Gujarat",[72.8311,21.1702],"High",40,"7.5M",12],["Vadodara","Gujarat",[73.1812,22.3072],"High",42,"2.2M",14],["Rajkot","Gujarat",[70.8022,22.3039],"Extreme",44,"2.0M",17],["Indore","Madhya Pradesh",[75.8577,22.7196],"High",42,"2.5M",14],["Bhopal","Madhya Pradesh",[77.4126,23.2599],"High",42,"1.9M",13],["Jabalpur","Madhya Pradesh",[79.9864,23.1815],"High",43,"1.3M",15],["Gwalior","Madhya Pradesh",[78.1828,26.2183],"Extreme",45,"1.3M",18],
-["Kolkata","West Bengal",[88.3639,22.5726],"Extreme",42,"15.6M",16],["Siliguri","West Bengal",[88.3953,26.7271],"Moderate",37,"0.9M",6],["Patna","Bihar",[85.1376,25.5941],"Extreme",45,"2.5M",19],["Ranchi","Jharkhand",[85.3096,23.3441],"Moderate",39,"1.1M",7],["Bhubaneswar","Odisha",[85.8245,20.2961],"High",40,"1.1M",11],["Guwahati","Assam",[91.7362,26.1445],"Moderate",37,"1.1M",6],["Raipur","Chhattisgarh",[81.6296,21.2514],"Extreme",44,"1.8M",17],
-["Bengaluru","Karnataka",[77.5946,12.9716],"Moderate",34,"13.6M",4],["Hyderabad","Telangana",[78.4867,17.385],"High",42,"10.8M",14],["Chennai","Tamil Nadu",[80.2707,13.0827],"High",39,"11.2M",10],["Coimbatore","Tamil Nadu",[76.9558,11.0168],"Moderate",35,"2.3M",5],["Madurai","Tamil Nadu",[78.1198,9.9252],"High",40,"1.8M",10],["Kochi","Kerala",[76.2673,9.9312],"Moderate",34,"2.1M",4],["Thiruvananthapuram","Kerala",[76.9366,8.5241],"Moderate",33,"1.1M",3],["Vijayawada","Andhra Pradesh",[80.648,16.5062],"High",43,"1.5M",15],["Visakhapatnam","Andhra Pradesh",[83.2185,17.6868],"High",39,"2.4M",9],["Mysuru","Karnataka",[76.6394,12.2958],"Low",33,"1.2M",2],
-["Shimla","Himachal Pradesh",[77.1734,31.1048],"Low",29,"0.3M",0],["Srinagar","Jammu & Kashmir",[74.7973,34.0837],"Low",31,"1.0M",1],["Jammu","Jammu & Kashmir",[74.857,32.7266],"Moderate",39,"0.7M",6]
-].map(([name,state,coordinates,risk,temperature,population,heatDays])=>({name,state,coordinates:coordinates as [number,number],risk:risk as Risk,temperature:temperature as number,population:population as string,heatDays:heatDays as number}));
+const INDIA_GEO_URL =
+  "https://raw.githubusercontent.com/AbhinavSwami28/india-official-geojson/main/india-states-simplified.geojson";
 
-const riskColor:Record<Risk,string>={Extreme:"#c92a2a",High:"#e97824",Moderate:"#d6a20b",Low:"#27834a"};
-const riskScore:Record<Risk,number>={Extreme:90,High:72,Moderate:48,Low:24};
+const cities: City[] = [
+  { name: "Delhi", state: "Delhi", coordinates: [77.1025, 28.7041], risk: "Extreme", temperature: 45 },
+  { name: "Amritsar", state: "Punjab", coordinates: [74.8723, 31.634], risk: "High", temperature: 43 },
+  { name: "Ludhiana", state: "Punjab", coordinates: [75.8573, 30.901], risk: "High", temperature: 43 },
+  { name: "Chandigarh", state: "Chandigarh", coordinates: [76.7794, 30.7333], risk: "High", temperature: 42 },
+  { name: "Jaipur", state: "Rajasthan", coordinates: [75.7873, 26.9124], risk: "Extreme", temperature: 46 },
+  { name: "Jodhpur", state: "Rajasthan", coordinates: [73.0243, 26.2389], risk: "Extreme", temperature: 47 },
+  { name: "Kota", state: "Rajasthan", coordinates: [75.8648, 25.2138], risk: "Extreme", temperature: 46 },
+  { name: "Lucknow", state: "Uttar Pradesh", coordinates: [80.9462, 26.8467], risk: "Extreme", temperature: 45 },
+  { name: "Kanpur", state: "Uttar Pradesh", coordinates: [80.3319, 26.4499], risk: "Extreme", temperature: 45 },
+  { name: "Agra", state: "Uttar Pradesh", coordinates: [78.0081, 27.1767], risk: "Extreme", temperature: 46 },
+  { name: "Varanasi", state: "Uttar Pradesh", coordinates: [82.9739, 25.3176], risk: "High", temperature: 44 },
+  { name: "Prayagraj", state: "Uttar Pradesh", coordinates: [81.8463, 25.4358], risk: "Extreme", temperature: 46 },
+  { name: "Dehradun", state: "Uttarakhand", coordinates: [78.0322, 30.3165], risk: "Moderate", temperature: 39 },
 
-export default function Home(){
- const [selected,setSelected]=useState<City>(cities[0]); const [filter,setFilter]=useState<Risk|"All">("All"); const [query,setQuery]=useState("");
- const filtered=useMemo(()=>cities.filter(c=>(filter==="All"||c.risk===filter)&&(c.name+" "+c.state).toLowerCase().includes(query.toLowerCase())),[filter,query]);
- const counts=useMemo(()=>({extreme:cities.filter(c=>c.risk==="Extreme").length,high:cities.filter(c=>c.risk==="High").length}),[]);
- return <div className="site-shell">
-  <header className="topbar"><a className="brand" href="#top"><span className="brand-mark"><Activity size={18}/></span><span>HEAT<span>MAP</span></span></a><nav><a href="#overview">Overview</a><a href="#map">Live Map</a><a href="#analysis">Analysis</a><a href="#methodology">Methodology</a></nav><a className="source-pill" href="#sources"><Database size={14}/> Data & Sources</a></header>
-  <main id="top">
-   <section className="hero-block" id="overview"><div className="hero-copy"><div className="eyebrow">URBAN HEAT INTELLIGENCE · INDIA</div><h1>Where is India<br/><em>heating up?</em></h1><p>Explore heat exposure across major Indian cities through an interactive geographic view, risk indicators and transparent analysis.</p><div className="hero-actions"><a href="#map" className="primary-btn">Explore the map <ArrowDownRight size={17}/></a><a href="#methodology" className="text-btn">How risk is calculated <ArrowDownRight size={15}/></a></div></div><div className="hero-visual"><div className="sun-orb"/><div className="hero-visual-card"><span>INDIA URBAN HEAT</span><strong>{cities.length}</strong><small>cities in this visualization</small></div></div></section>
-   <section className="stat-strip"><div><span>EXTREME RISK</span><strong>{counts.extreme}</strong><small>cities currently flagged</small></div><div><span>HIGH RISK</span><strong>{counts.high}</strong><small>cities requiring attention</small></div><div><span>PEAK INDICATOR</span><strong>47°C</strong><small>highest value in the current layer</small></div><div><span>DATA LAYER</span><strong>01</strong><small>city-level analytical view</small></div></section>
-   <section className="map-section" id="map"><div className="section-heading"><div><div className="eyebrow">01 / SPATIAL VIEW</div><h2>India, city by city.</h2><p>Click a marker to inspect its profile. Use the filters to isolate risk categories.</p></div><div className="map-tools"><div className="search-box"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search a city…"/></div><div className="filter-row">{(["All","Extreme","High","Moderate","Low"] as const).map(x=><button key={x} className={filter===x?"selected":""} onClick={()=>setFilter(x)}>{x!=="All"&&<i style={{background:riskColor[x]}}/>}{x}</button>)}</div></div></div>
-    <div className="map-grid"><div className="map-card"><ComposableMap projection="geoMercator" projectionConfig={{center:[82,22],scale:1050}} width={650} height={570}><Geographies geography={INDIA_GEO_URL}>{({geographies})=>geographies.map(geo=><Geography key={geo.rsmKey} geography={geo} fill="#edf3ec" stroke="#aab8aa" strokeWidth={0.65} style={{default:{outline:"none"},hover:{fill:"#e3ece2",outline:"none"},pressed:{outline:"none"}}}/>)}</Geographies>{filtered.map(city=><Marker key={city.name} coordinates={city.coordinates} onClick={()=>setSelected(city)}><circle className="city-dot" r={selected.name===city.name?8:5} fill={riskColor[city.risk]} stroke="#fff" strokeWidth={2}/></Marker>)}</ComposableMap><div className="map-legend">{(["Extreme","High","Moderate","Low"] as Risk[]).map(x=><span key={x}><i style={{background:riskColor[x]}}/>{x}</span>)}</div></div>
-    <aside className="profile-card"><div className="profile-top"><span>SELECTED CITY</span><MapPin size={17}/></div><h3>{selected.name}</h3><p>{selected.state}</p><div className="risk-line"><b style={{color:riskColor[selected.risk]}}>{selected.risk}</b><span>risk level</span><strong>{riskScore[selected.risk]}</strong><small>/ 100</small></div><div className="meter"><span style={{width:riskScore[selected.risk]+"%",background:riskColor[selected.risk]}}/></div><div className="profile-metrics"><div><Thermometer/><span>Peak indicator</span><strong>{selected.temperature}°C</strong></div><div><ShieldAlert/><span>Heat days</span><strong>{selected.heatDays}</strong></div><div><Users/><span>Population</span><strong>{selected.population}</strong></div></div><div className="profile-note"><b>Why it matters</b><p>Heat risk combines hazard signals with urban exposure and vulnerability considerations. The score shown here is a visualization layer, not an official warning.</p></div></aside></div>
-   </section>
-   <section className="analysis-section" id="analysis"><div className="section-heading"><div><div className="eyebrow">02 / CITY ANALYSIS</div><h2>Compare the heat landscape.</h2><p>A quick view of cities with the strongest heat signals in the current dataset layer.</p></div></div><div className="analysis-grid"><div className="ranking-card"><div className="card-head"><span>RISK RANKING</span><span>INDICATIVE SCORE</span></div>{[...cities].sort((a,b)=>riskScore[b.risk]-riskScore[a.risk]||b.temperature-a.temperature).slice(0,7).map((c,i)=><button className="rank-row" key={c.name} onClick={()=>{setSelected(c);document.getElementById("map")?.scrollIntoView({behavior:"smooth"})}}><span className="rank-number">0{i+1}</span><span className="rank-city"><b>{c.name}</b><small>{c.state}</small></span><span className="mini-bar"><i style={{width:riskScore[c.risk]+"%",background:riskColor[c.risk]}}/></span><strong>{riskScore[c.risk]}</strong><ArrowUpRight size={15}/></button>)}</div><div className="insight-card"><div className="insight-icon"><Activity size={21}/></div><div className="eyebrow">READ THE MAP</div><h3>Heat isn't distributed evenly.</h3><p>Northwestern and central urban regions show stronger extreme-heat signals in this visualization, while high-altitude cities sit at the lower end.</p><div className="insight-stat"><strong>47°C</strong><span>highest peak-temperature indicator in this layer</span></div></div></div></section>
-   <section className="method-section" id="methodology"><div className="method-copy"><div className="eyebrow">03 / METHODOLOGY</div><h2>A score you can actually understand.</h2><p>Rather than hiding a black-box number behind the map, the platform is designed around three understandable dimensions.</p></div><div className="method-grid"><div><span>01</span><h3>Hazard</h3><p>Temperature extremes, persistence and heatwave signals.</p></div><div><span>02</span><h3>Exposure</h3><p>People and urban areas potentially exposed to extreme heat.</p></div><div><span>03</span><h3>Vulnerability</h3><p>Context that can increase the impact of heat on communities.</p></div></div></section>
-   <section className="sources-section" id="sources"><div><div className="eyebrow">04 / DATA & SOURCES</div><h2>Built to show where the numbers come from.</h2><p>The current interface is structured so verified datasets can be attached to every metric. Before publication, each value should carry its source, year and definition.</p></div><div className="source-list"><div><b>India Meteorological Department</b><span>Temperature and heatwave observations / warnings</span></div><div><b>Population datasets</b><span>Urban population and exposure context</span></div><div><b>Remote sensing / research</b><span>Potential urban heat-island indicators</span></div></div></section>
-  </main><footer><span>HEATMAP · India Urban Heat Intelligence</span><span>Research visualization · Verify data before operational use</span></footer>
- </div>
+  { name: "Mumbai", state: "Maharashtra", coordinates: [72.8777, 19.076], risk: "High", temperature: 34 },
+  { name: "Pune", state: "Maharashtra", coordinates: [73.8567, 18.5204], risk: "Moderate", temperature: 36 },
+  { name: "Nagpur", state: "Maharashtra", coordinates: [79.0882, 21.1458], risk: "Extreme", temperature: 45 },
+  { name: "Nashik", state: "Maharashtra", coordinates: [73.7898, 19.9975], risk: "High", temperature: 39 },
+  { name: "Ahmedabad", state: "Gujarat", coordinates: [72.5714, 23.0225], risk: "Extreme", temperature: 46 },
+  { name: "Surat", state: "Gujarat", coordinates: [72.8311, 21.1702], risk: "High", temperature: 40 },
+  { name: "Vadodara", state: "Gujarat", coordinates: [73.1812, 22.3072], risk: "High", temperature: 42 },
+  { name: "Rajkot", state: "Gujarat", coordinates: [70.8022, 22.3039], risk: "Extreme", temperature: 44 },
+  { name: "Indore", state: "Madhya Pradesh", coordinates: [75.8577, 22.7196], risk: "High", temperature: 42 },
+  { name: "Bhopal", state: "Madhya Pradesh", coordinates: [77.4126, 23.2599], risk: "High", temperature: 42 },
+  { name: "Jabalpur", state: "Madhya Pradesh", coordinates: [79.9864, 23.1815], risk: "High", temperature: 43 },
+  { name: "Gwalior", state: "Madhya Pradesh", coordinates: [78.1828, 26.2183], risk: "Extreme", temperature: 45 },
+
+  { name: "Kolkata", state: "West Bengal", coordinates: [88.3639, 22.5726], risk: "Extreme", temperature: 42 },
+  { name: "Siliguri", state: "West Bengal", coordinates: [88.3953, 26.7271], risk: "Moderate", temperature: 37 },
+  { name: "Patna", state: "Bihar", coordinates: [85.1376, 25.5941], risk: "Extreme", temperature: 45 },
+  { name: "Ranchi", state: "Jharkhand", coordinates: [85.3096, 23.3441], risk: "Moderate", temperature: 39 },
+  { name: "Bhubaneswar", state: "Odisha", coordinates: [85.8245, 20.2961], risk: "High", temperature: 40 },
+  { name: "Guwahati", state: "Assam", coordinates: [91.7362, 26.1445], risk: "Moderate", temperature: 37 },
+  { name: "Raipur", state: "Chhattisgarh", coordinates: [81.6296, 21.2514], risk: "Extreme", temperature: 44 },
+
+  { name: "Bengaluru", state: "Karnataka", coordinates: [77.5946, 12.9716], risk: "Moderate", temperature: 34 },
+  { name: "Hyderabad", state: "Telangana", coordinates: [78.4867, 17.385], risk: "High", temperature: 42 },
+  { name: "Chennai", state: "Tamil Nadu", coordinates: [80.2707, 13.0827], risk: "High", temperature: 39 },
+  { name: "Coimbatore", state: "Tamil Nadu", coordinates: [76.9558, 11.0168], risk: "Moderate", temperature: 35 },
+  { name: "Madurai", state: "Tamil Nadu", coordinates: [78.1198, 9.9252], risk: "High", temperature: 40 },
+  { name: "Kochi", state: "Kerala", coordinates: [76.2673, 9.9312], risk: "Moderate", temperature: 34 },
+  { name: "Thiruvananthapuram", state: "Kerala", coordinates: [76.9366, 8.5241], risk: "Moderate", temperature: 33 },
+  { name: "Vijayawada", state: "Andhra Pradesh", coordinates: [80.648, 16.5062], risk: "High", temperature: 43 },
+  { name: "Visakhapatnam", state: "Andhra Pradesh", coordinates: [83.2185, 17.6868], risk: "High", temperature: 39 },
+  { name: "Mysuru", state: "Karnataka", coordinates: [76.6394, 12.2958], risk: "Low", temperature: 33 },
+
+  { name: "Shimla", state: "Himachal Pradesh", coordinates: [77.1734, 31.1048], risk: "Low", temperature: 29 },
+  { name: "Srinagar", state: "Jammu & Kashmir", coordinates: [74.7973, 34.0837], risk: "Low", temperature: 31 },
+  { name: "Jammu", state: "Jammu & Kashmir", coordinates: [74.857, 32.7266], risk: "Moderate", temperature: 39 },
+];
+
+const riskColor = {
+  Extreme: "#dc2626",
+  High: "#f97316",
+  Moderate: "#eab308",
+  Low: "#16a34a",
+};
+
+export default function Home() {
+  const [selectedCity, setSelectedCity] = useState<City | null>(cities[0]);
+  const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
+
+  const filteredCities = useMemo(() => {
+    return cities.filter((city) => {
+      const matchesRisk = filter === "All" || city.risk === filter;
+      const matchesSearch =
+        city.name.toLowerCase().includes(search.toLowerCase()) ||
+        city.state.toLowerCase().includes(search.toLowerCase());
+
+      return matchesRisk && matchesSearch;
+    });
+  }, [filter, search]);
+
+  return (
+    <main className="heat-page">
+      <header className="hero">
+        <div>
+          <p className="eyebrow">INDIA • URBAN CLIMATE INTELLIGENCE</p>
+
+          <h1>
+            Heat Risk
+            <span> Mapping</span>
+          </h1>
+
+          <p className="subtitle">
+            Explore heat exposure across major Indian cities.
+          </p>
+        </div>
+
+        <div className="hero-stat">
+          <strong>{cities.length}</strong>
+          <span>cities mapped</span>
+        </div>
+      </header>
+
+      <section className="map-section">
+        <div className="map-header">
+          <div>
+            <h2>Indian City Heat Risk</h2>
+            <p>
+              Select a city to inspect its current risk profile.
+            </p>
+          </div>
+
+          <input
+            className="city-search"
+            placeholder="Search city or state..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div className="risk-filters">
+          {["All", "Extreme", "High", "Moderate", "Low"].map((level) => (
+            <button
+              key={level}
+              className={filter === level ? "active" : ""}
+              onClick={() => setFilter(level)}
+            >
+              {level !== "All" && (
+                <span
+                  className="filter-dot"
+                  style={{
+                    background:
+                      riskColor[level as keyof typeof riskColor],
+                  }}
+                />
+              )}
+              {level}
+            </button>
+          ))}
+        </div>
+
+        <div className="map-layout">
+          <div className="india-map-card">
+            <ComposableMap
+              projection="geoMercator"
+              projectionConfig={{
+                center: [82, 22],
+                scale: 1050,
+              }}
+              width={600}
+              height={560}
+              style={{
+                width: "100%",
+                height: "auto",
+              }}
+            >
+              <Geographies geography={INDIA_GEO_URL}>
+                {({ geographies }) =>
+                  geographies.map((geo) => (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      fill="#eef5ed"
+                      stroke="#9fb4a1"
+                      strokeWidth={0.7}
+                      style={{
+  outline: "none",
+}}
+                    />
+                  ))
+                }
+              </Geographies>
+
+              {filteredCities.map((city) => (
+                <Marker
+                  key={city.name}
+                  coordinates={city.coordinates}
+                  onClick={() => setSelectedCity(city)}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <circle
+                    r={selectedCity?.name === city.name ? 7 : 4}
+                    fill={riskColor[city.risk]}
+                    stroke="#ffffff"
+                    strokeWidth={2}
+                  />
+
+                  {selectedCity?.name === city.name && (
+                    <text
+                      textAnchor="middle"
+                      y={-12}
+                      style={{
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "10px",
+                        fontWeight: 700,
+                        fill: "#172019",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      {city.name}
+                    </text>
+                  )}
+                </Marker>
+              ))}
+            </ComposableMap>
+
+            <div className="map-note">
+              <span />
+              Geographic city locations • Risk visualization
+            </div>
+          </div>
+
+          <aside className="city-panel">
+            {selectedCity ? (
+              <>
+                <div className="selected-label">SELECTED CITY</div>
+
+                <h2>{selectedCity.name}</h2>
+
+                <p className="state-name">
+                  {selectedCity.state}
+                </p>
+
+                <div
+                  className="risk-badge"
+                  style={{
+                    background: `${riskColor[selectedCity.risk]}18`,
+                    color: riskColor[selectedCity.risk],
+                  }}
+                >
+                  <span
+                    style={{
+                      background: riskColor[selectedCity.risk],
+                    }}
+                  />
+                  {selectedCity.risk} Risk
+                </div>
+
+                <div className="temperature">
+                  <strong>{selectedCity.temperature}°</strong>
+                  <span>peak temperature indicator</span>
+                </div>
+
+                <div className="coordinates">
+                  <div>
+                    <span>LATITUDE</span>
+                    <strong>
+                      {selectedCity.coordinates[1].toFixed(4)}°
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>LONGITUDE</span>
+                    <strong>
+                      {selectedCity.coordinates[0].toFixed(4)}°
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="panel-message">
+                  <strong>Research data layer</strong>
+                  <p>
+                    This panel is ready to be connected to the
+                    verified heat-risk dataset in the next step.
+                  </p>
+                </div>
+              </>
+            ) : (
+              <p>Select a city on the map.</p>
+            )}
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
 }
