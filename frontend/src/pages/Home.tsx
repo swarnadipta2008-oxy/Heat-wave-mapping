@@ -187,7 +187,7 @@ export default function Home() {
                         pressed: {
                           outline: "none",
                         },
-                      }}
+                      } as any}
                     />
                   ))
                 }
@@ -199,9 +199,7 @@ export default function Home() {
                   coordinates={city.coordinates}
                   onClick={() => setSelectedCity(city)}
                   style={{
-                    default: {
-                      cursor: "pointer",
-                    },
+                    cursor: "pointer",
                   }}
                 >
                   <circle
