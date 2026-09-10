@@ -76,10 +76,32 @@ const riskColor = {
   Low: "#16a34a",
 };
 
+const stats = [
+  { label: "Cities Tracked", value: "45+" },
+  { label: "States Covered", value: "20+" },
+  { label: "Extreme Risk Cities", value: cities.filter((c) => c.risk === "Extreme").length.toString() },
+  { label: "Peak Temp Recorded", value: `${Math.max(...cities.map((c) => c.temperature))}°C` },
+];
+
+const timeline = [
+  { year: "2015", title: "Andhra Pradesh & Telangana Heatwave", desc: "One of India's deadliest heatwaves, with over 2,000 reported deaths across the two states." },
+  { year: "2019", title: "Northern Plains Heatwave", desc: "Prolonged extreme heat across Rajasthan, Delhi, and UP, with temperatures crossing 48°C in places." },
+  { year: "2022", title: "Early & Intense Summer", desc: "India recorded its hottest March in over a century, disrupting agriculture and power supply." },
+  { year: "2024", title: "Record-Breaking Delhi Heat", desc: "Delhi recorded some of its highest-ever temperatures, prompting heat action plans across NCR." },
+];
+
+const faqs = [
+  { q: "What is a heatwave?", a: "A heatwave is a prolonged period of abnormally high temperatures, typically when temperatures exceed the normal maximum by a significant margin for two or more consecutive days." },
+  { q: "How does IMD classify a heatwave?", a: "The India Meteorological Department classifies a heatwave when the maximum temperature reaches at least 40°C in plains and 30°C in hilly regions, with a departure of 4.5°C or more from normal." },
+  { q: "Who is most at risk during a heatwave?", a: "Elderly people, infants, outdoor laborers, and those with pre-existing health conditions face the highest risk of heat-related illness." },
+  { q: "What should I do during a heat alert?", a: "Stay indoors during peak hours, drink plenty of water, wear light clothing, and avoid strenuous activity between 12 PM and 4 PM." },
+];
+
 export default function Home() {
   const [selectedCity, setSelectedCity] = useState<City | null>(cities[0]);
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const filteredCities = useMemo(() => {
     return cities.filter((city) => {
@@ -91,6 +113,11 @@ export default function Home() {
       return matchesRisk && matchesSearch;
     });
   }, [filter, search]);
+
+  const sortedCities = useMemo(() => {
+    const order = { Extreme: 0, High: 1, Moderate: 2, Low: 3 };
+    return [...cities].sort((a, b) => order[a.risk] - order[b.risk] || b.temperature - a.temperature);
+  }, []);
 
   return (
     <main className="heat-page">
@@ -113,6 +140,15 @@ export default function Home() {
           <span>cities mapped</span>
         </div>
       </header>
+
+      <section className="stats-section">
+        {stats.map((s) => (
+          <div className="stat-card" key={s.label}>
+            <strong>{s.value}</strong>
+            <span>{s.label}</span>
+          </div>
+        ))}
+      </section>
 
       <section className="map-section">
         <div className="map-header">
@@ -177,8 +213,8 @@ export default function Home() {
                       stroke="#9fb4a1"
                       strokeWidth={0.7}
                       style={{
-  outline: "none",
-}}
+                        outline: "none",
+                      }}
                     />
                   ))
                 }
@@ -285,6 +321,152 @@ export default function Home() {
             )}
           </aside>
         </div>
+      </section>
+
+      <section className="info-section">
+        <h2>Why Urban Heatwaves Are Rising</h2>
+        <div className="info-grid">
+          <div className="info-card">
+            <h3>Urban Heat Island Effect</h3>
+            <p>Concrete, asphalt, and glass buildings absorb and trap heat, making cities significantly hotter than surrounding rural areas — often by 2-5°C.</p>
+          </div>
+          <div className="info-card">
+            <h3>Loss of Green Cover</h3>
+            <p>Rapid deforestation and shrinking parks reduce natural cooling, removing shade and evapotranspiration that once regulated local temperatures.</p>
+          </div>
+          <div className="info-card">
+            <h3>Vehicle & Industrial Emissions</h3>
+            <p>Traffic congestion and industrial activity release waste heat and greenhouse gases, compounding local warming in dense urban zones.</p>
+          </div>
+          <div className="info-card">
+            <h3>Climate Change</h3>
+            <p>Rising global temperatures are intensifying the frequency, duration, and severity of heatwave events across Indian cities year on year.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="info-section">
+        <h2>Health Impact of Extreme Heat</h2>
+        <div className="info-grid">
+          <div className="info-card">
+            <h3>Heatstroke & Exhaustion</h3>
+            <p>Prolonged exposure can cause dizziness, nausea, rapid heartbeat, and in severe cases, life-threatening heatstroke.</p>
+          </div>
+          <div className="info-card">
+            <h3>Vulnerable Groups</h3>
+            <p>Elderly people, outdoor workers, children, and those with chronic illnesses face the highest risk during extreme heat events.</p>
+          </div>
+          <div className="info-card">
+            <h3>Dehydration</h3>
+            <p>High temperatures accelerate fluid loss, leading to dehydration, kidney strain, and reduced physical and mental performance.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="info-section">
+        <h2>Prevention & Mitigation</h2>
+        <div className="info-grid">
+          <div className="info-card">
+            <h3>Stay Hydrated</h3>
+            <p>Drink water regularly throughout the day, even without feeling thirsty, and avoid excess caffeine or alcohol.</p>
+          </div>
+          <div className="info-card">
+            <h3>Avoid Peak Hours</h3>
+            <p>Limit outdoor activity between 12 PM and 4 PM when temperatures and UV exposure are highest.</p>
+          </div>
+          <div className="info-card">
+            <h3>Urban Greening</h3>
+            <p>Expanding tree cover, green roofs, and water bodies in cities can meaningfully reduce local heat buildup.</p>
+          </div>
+          <div className="info-card">
+            <h3>Cooling Shelters</h3>
+            <p>Public cooling centers and shaded community spaces help protect vulnerable populations during heatwave alerts.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="table-section">
+        <h2>City Risk Ranking</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>City</th>
+                <th>State</th>
+                <th>Risk Level</th>
+                <th>Peak Temp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedCities.map((city) => (
+                <tr key={city.name}>
+                  <td>{city.name}</td>
+                  <td>{city.state}</td>
+                  <td>
+                    <span
+                      className="table-badge"
+                      style={{
+                        background: `${riskColor[city.risk]}18`,
+                        color: riskColor[city.risk],
+                      }}
+                    >
+                      {city.risk}
+                    </span>
+                  </td>
+                  <td>{city.temperature}°C</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="timeline-section">
+        <h2>Major Heatwave Events in India</h2>
+        <div className="timeline">
+          {timeline.map((t) => (
+            <div className="timeline-item" key={t.year}>
+              <div className="timeline-year">{t.year}</div>
+              <div className="timeline-content">
+                <h3>{t.title}</h3>
+                <p>{t.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div className="faq-list">
+          {faqs.map((f, i) => (
+            <div className="faq-item" key={f.q}>
+              <button
+                className="faq-question"
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+              >
+                {f.q}
+                <span>{openFaq === i ? "−" : "+"}</span>
+              </button>
+              {openFaq === i && <p className="faq-answer">{f.a}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="about-section">
+        <h2>About This Project</h2>
+        <p>
+          This Digital Heatwave Risk Mapping tool was developed as part of the CHE110
+          (Environmental Studies) CA1 assignment at Lovely Professional University (LPU).
+        </p>
+        <p>
+          <strong>Team:</strong> Prashanth Reddy Karrennagari, Arpan Raj, Swarnadipta Roy
+        </p>
+        <p className="note">
+          City temperature and risk data shown here is illustrative, intended to
+          demonstrate the concept of a real-time heat risk monitoring platform.
+        </p>
       </section>
     </main>
   );
