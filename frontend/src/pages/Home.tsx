@@ -33,7 +33,13 @@ export default function Home() {
   const baseCity = cities.find(c => c.id === selectedId) || cities[0];
   const hottest = [...cities].sort((a, b) => b.peak - a.peak)[0];
   const average = Math.round(cities.reduce((sum, c) => sum + scoreHeat(c).score, 0) / cities.length);
-  const go = (next: View) => { setView(next); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const go = (next: View) => {
+    if (next === view) return;
+    const update = () => { setView(next); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    const page = document as Document & { startViewTransition?: (callback: () => void) => void };
+    if (page.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) page.startViewTransition(update);
+    else update();
+  };
   const exportCsv = () => { downloadFile(csvFor(view === 'compare' ? cities.filter(c => compareIds.includes(c.id)) : filtered), `heatmap-${year}-${view}.csv`); setMessage('CSV downloaded with source and model information.'); };
   const addCompare = (id: string) => {
     if (compareIds.includes(id)) { go('compare'); return; }
