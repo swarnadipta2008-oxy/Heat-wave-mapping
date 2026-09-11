@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ArrowDownToLine, ArrowRight, ArrowUpRight, BookOpen, Check, ChevronRight, CircleHelp, CloudSun, Compass, Download, ExternalLink, FlaskConical, Globe2, Layers, MapPin, Moon, RefreshCw, Search, Share2, ShieldCheck, SlidersHorizontal, Sun, Thermometer, Trees, X } from 'lucide-react';
@@ -16,6 +16,7 @@ const initialYear = originalParams.get('year') === '2025' ? 2025 : 2024;
 const initialView = views.some(v => v.id === originalParams.get('view')) ? originalParams.get('view') as View : 'atlas';
 
 export default function Home() {
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => localStorage.getItem('heatmap-theme') === 'dark' ? 'dark' : 'light');
   const [view, setView] = useState<View>(initialView);
   const [year, setYear] = useState(initialYear);
   const [selectedId, setSelectedId] = useState(originalParams.get('city') || 'delhi');
@@ -24,6 +25,7 @@ export default function Home() {
   const [tier, setTier] = useState<'all' | Tier>('all');
   const [compareIds, setCompareIds] = useState(['delhi', 'mumbai', 'bengaluru']);
   const [message, setMessage] = useState('');
+  useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem('heatmap-theme', theme); }, [theme]);
   const cities = allCities.filter(c => c.year === year);
   const ranked = [...cities].sort((a, b) => scoreHeat(b).score - scoreHeat(a).score);
   const filtered = ranked.filter(c => (region === 'India' || c.state.includes(region)) && (tier === 'all' || scoreHeat(c).tier === tier) && `${c.name} ${c.state}`.toLowerCase().includes(search.toLowerCase().trim()));
@@ -49,7 +51,7 @@ export default function Home() {
       <div className="sidebar-project"><div className="tiny-sun"><Compass size={25}/></div><h3>A small project.<br/>A shared future.</h3><p>Understanding heat is the first step toward more resilient cities.</p><button onClick={() => go('research')}>Explore the research <ArrowUpRight size={15}/></button></div>
       <div className="sidebar-footer"><span className="edition-dot"/> CHE110 · ENVIRONMENTAL STUDIES<small>Lovely Professional University<br/>Academic project · 2026</small></div>
     </aside>
-    <div className="workspace"><header className="topbar"><div className="breadcrumb">Observatory <ChevronRight size={13}/><strong>{views.find(v => v.id === view)?.label}</strong></div><div className="top-actions"><span className="research-status"><span/> Research edition</span><button className="icon-button" aria-label="Copy a link to this view" onClick={share}><Share2 size={17}/></button><button className="outline-button export-top" onClick={exportCsv}><Download size={15}/> Export data</button></div></header>
+    <div className="workspace"><header className="topbar"><div className="breadcrumb">Observatory <ChevronRight size={13}/><strong>{views.find(v => v.id === view)?.label}</strong></div><div className="top-actions"><span className="research-status"><span/> Research edition</span><div className="theme-toggle" role="group" aria-label="Color theme"><button className={theme === 'light' ? 'active' : ''} aria-label="Use light mode" aria-pressed={theme === 'light'} onClick={() => setTheme('light')}><Sun size={15}/></button><button className={theme === 'dark' ? 'active' : ''} aria-label="Use dark mode" aria-pressed={theme === 'dark'} onClick={() => setTheme('dark')}><Moon size={15}/></button></div><button className="icon-button" aria-label="Copy a link to this view" onClick={share}><Share2 size={17}/></button><button className="outline-button export-top" onClick={exportCsv}><Download size={15}/> Export data</button></div></header>
       <main id="main-content" className={`view-${view}`}>
         <div className="mobile-brand"><Sun size={22}/> HeatMap India</div>
         <div className="page-heading"><div className="heading-copy"><p className="eyebrow">{view === 'atlas' ? 'MAKE THE INVISIBLE VISIBLE' : view === 'compare' ? 'CONTEXT CHANGES THE PICTURE' : view === 'lab' ? 'A SPACE FOR BETTER QUESTIONS' : 'THE SCIENCE BEHIND THE SCREEN'}</p><h1>{view === 'atlas' ? <>See the heat.<br/><span>Find the pattern.</span></> : view === 'compare' ? <>Different cities.<br/><span>Different heat stories.</span></> : view === 'lab' ? <>Change a variable.<br/><span>Explore the impact.</span></> : <>Good maps begin<br/><span>with good questions.</span></>}</h1><p className="heading-description">{view === 'atlas' ? 'Explore heat exposure across 25 Indian cities. Understand the signals, compare the patterns, and turn awareness into action.' : view === 'compare' ? 'Look beyond a single temperature. Compare the intensity, persistence, and nighttime burden of heat in up to four cities.' : view === 'lab' ? 'An open, explainable model. Adjust the heat indicators to see how a hypothetical scenario changes the index.' : 'A transparent student investigation into digital heatwave risk mapping for Indian cities. Every number has a source. Every model has limits.'}</p></div>

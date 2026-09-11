@@ -74,3 +74,22 @@ main{animation:none}
 .comparison-cards article:hover,.solution-cards article:hover,.lab-explainer>div:hover{transform:translateY(-3px);box-shadow:0 10px 22px #1d49320e}
 
 @media(prefers-reduced-motion:reduce){.heading-copy,.hero-art,.hero-art::before,.sun-disc,.contours,.city-marker.active .city-dot{animation:none!important}.city-marker .city-dot,.kpi,.rank-row,.comparison-cards article,.solution-cards article,.lab-explainer>div{transition:none!important}.city-marker:hover .city-dot,.kpi:hover,.rank-row:hover,.comparison-cards article:hover,.solution-cards article:hover,.lab-explainer>div:hover{transform:none!important;filter:none!important}}
+
+/* Theme control */
+.theme-toggle{display:flex;align-items:center;border:1px solid #dbe2d4;border-radius:7px;padding:2px;background:#fff}.theme-toggle button{display:grid;place-items:center;width:28px;height:28px;border-radius:5px;background:transparent;color:#70806c}.theme-toggle button.active{background:#e8eee1;color:#244e3d;box-shadow:0 1px 2px #1e3e2d16}
+:root[data-theme="dark"]{color:#e8eee7;background:#10231d;--forest:#e7efe8;--muted:#aab8aa;--border:#294238;--paper:#183128;--green:#8db89c}
+:root[data-theme="dark"] body,:root[data-theme="dark"] .app-shell{background:#10231d;color:#e8eee7}
+:root[data-theme="dark"] .topbar{background:#142a22;border-color:#294238}
+:root[data-theme="dark"] .breadcrumb,:root[data-theme="dark"] .breadcrumb strong,:root[data-theme="dark"] .research-status,:root[data-theme="dark"] .icon-button{color:#bdcabb}
+:root[data-theme="dark"] .theme-toggle,:root[data-theme="dark"] .outline-button,:root[data-theme="dark"] .year-control select,:root[data-theme="dark"] .region-control select,:root[data-theme="dark"] .base-selector select{background:#1a352b;border-color:#365347;color:#e5eee4}
+:root[data-theme="dark"] .theme-toggle button{color:#b8c8b9}:root[data-theme="dark"] .theme-toggle button.active{background:#365b49;color:#fff;box-shadow:none}
+:root[data-theme="dark"] .panel,:root[data-theme="dark"] .kpi,:root[data-theme="dark"] .inspector,:root[data-theme="dark"] .rank-row,:root[data-theme="dark"] .index-ring>div{background:#173027;border-color:#294238;color:#e8eee7}
+:root[data-theme="dark"] .kpi-accent{background:#33291f;border-color:#69482f}
+:root[data-theme="dark"] .section-number,:root[data-theme="dark"] .small-muted,:root[data-theme="dark"] .heading-description,:root[data-theme="dark"] .chart-description,:root[data-theme="dark"] .chart-note,:root[data-theme="dark"] .city-title p,:root[data-theme="dark"] .inspector-source,:root[data-theme="dark"] .section-description{color:#aebdaf}
+:root[data-theme="dark"] .subtle-tag,:root[data-theme="dark"] .tier-filters button.active,:root[data-theme="dark"] .tier-filters button:hover,:root[data-theme="dark"] .rank-row:hover,:root[data-theme="dark"] .rank-row.selected{background:#213d31;border-color:#375747;color:#dbe8dc}
+:root[data-theme="dark"] .search-box,:root[data-theme="dark"] .region-control{border-color:#365347;color:#b7c8b7}:root[data-theme="dark"] .search-box input{color:#edf5ed}
+:root[data-theme="dark"] .map-canvas{background-color:#152d24;background-image:linear-gradient(#78907b18 1px,transparent 1px),linear-gradient(90deg,#78907b18 1px,transparent 1px)}
+:root[data-theme="dark"] .map-tools{border-color:#365347;box-shadow:none}:root[data-theme="dark"] .map-tools button{background:#1a352b;color:#b9cbb9}:root[data-theme="dark"] .map-tools button:hover{background:#294b3a}
+:root[data-theme="dark"] .map-bottom,:root[data-theme="dark"] .atlas-footnote{background:#183128ee;border-color:#294238;color:#b6c5b5}
+:root[data-theme="dark"] .action-banner{background:#203c2f;border-color:#3b5b47}:root[data-theme="dark"] .comparison-cards article,:root[data-theme="dark"] .forecast-days>div{background:#1d382d;border-color:#365347}
+:root[data-theme="dark"] .footer{border-color:#294238;color:#aebdaf}:root[data-theme="dark"] .definition-banner{background:#3a3022;border-color:#6a5437;color:#e6c58a}:root[data-theme="dark"] .formula-block{background:#193229;border-color:#365347;color:#bdcfbc}
