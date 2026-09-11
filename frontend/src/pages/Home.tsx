@@ -1,473 +1,113 @@
-import { useMemo, useState } from "react";
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-} from "react-simple-maps";
+import { useState, type ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { ArrowDownToLine, ArrowRight, ArrowUpRight, BookOpen, Check, ChevronRight, CircleHelp, CloudSun, Compass, Download, ExternalLink, FlaskConical, Globe2, Layers, MapPin, Moon, RefreshCw, Search, Share2, ShieldCheck, SlidersHorizontal, Sun, Thermometer, Trees, X } from 'lucide-react';
+import HeatAtlas from '@/components/HeatAtlas';
+import weather from '@/data/weather.json';
+import { clamp, csvFor, downloadFile, fetchForecast, monthNames, scoreHeat, tierMeta, type City, type HeatInputs, type Tier } from '@/lib/heatModel';
+import '@/index.css';
 
-type City = {
-  name: string;
-  state: string;
-  coordinates: [number, number];
-  risk: "Extreme" | "High" | "Moderate" | "Low";
-  temperature: number;
-};
-
-const INDIA_GEO_URL =
-  "https://raw.githubusercontent.com/AbhinavSwami28/india-official-geojson/main/india-states-simplified.geojson";
-
-const cities: City[] = [
-  { name: "Delhi", state: "Delhi", coordinates: [77.1025, 28.7041], risk: "Extreme", temperature: 45 },
-  { name: "Amritsar", state: "Punjab", coordinates: [74.8723, 31.634], risk: "High", temperature: 43 },
-  { name: "Ludhiana", state: "Punjab", coordinates: [75.8573, 30.901], risk: "High", temperature: 43 },
-  { name: "Chandigarh", state: "Chandigarh", coordinates: [76.7794, 30.7333], risk: "High", temperature: 42 },
-  { name: "Jaipur", state: "Rajasthan", coordinates: [75.7873, 26.9124], risk: "Extreme", temperature: 46 },
-  { name: "Jodhpur", state: "Rajasthan", coordinates: [73.0243, 26.2389], risk: "Extreme", temperature: 47 },
-  { name: "Kota", state: "Rajasthan", coordinates: [75.8648, 25.2138], risk: "Extreme", temperature: 46 },
-  { name: "Lucknow", state: "Uttar Pradesh", coordinates: [80.9462, 26.8467], risk: "Extreme", temperature: 45 },
-  { name: "Kanpur", state: "Uttar Pradesh", coordinates: [80.3319, 26.4499], risk: "Extreme", temperature: 45 },
-  { name: "Agra", state: "Uttar Pradesh", coordinates: [78.0081, 27.1767], risk: "Extreme", temperature: 46 },
-  { name: "Varanasi", state: "Uttar Pradesh", coordinates: [82.9739, 25.3176], risk: "High", temperature: 44 },
-  { name: "Prayagraj", state: "Uttar Pradesh", coordinates: [81.8463, 25.4358], risk: "Extreme", temperature: 46 },
-  { name: "Dehradun", state: "Uttarakhand", coordinates: [78.0322, 30.3165], risk: "Moderate", temperature: 39 },
-
-  { name: "Mumbai", state: "Maharashtra", coordinates: [72.8777, 19.076], risk: "High", temperature: 34 },
-  { name: "Pune", state: "Maharashtra", coordinates: [73.8567, 18.5204], risk: "Moderate", temperature: 36 },
-  { name: "Nagpur", state: "Maharashtra", coordinates: [79.0882, 21.1458], risk: "Extreme", temperature: 45 },
-  { name: "Nashik", state: "Maharashtra", coordinates: [73.7898, 19.9975], risk: "High", temperature: 39 },
-  { name: "Ahmedabad", state: "Gujarat", coordinates: [72.5714, 23.0225], risk: "Extreme", temperature: 46 },
-  { name: "Surat", state: "Gujarat", coordinates: [72.8311, 21.1702], risk: "High", temperature: 40 },
-  { name: "Vadodara", state: "Gujarat", coordinates: [73.1812, 22.3072], risk: "High", temperature: 42 },
-  { name: "Rajkot", state: "Gujarat", coordinates: [70.8022, 22.3039], risk: "Extreme", temperature: 44 },
-  { name: "Indore", state: "Madhya Pradesh", coordinates: [75.8577, 22.7196], risk: "High", temperature: 42 },
-  { name: "Bhopal", state: "Madhya Pradesh", coordinates: [77.4126, 23.2599], risk: "High", temperature: 42 },
-  { name: "Jabalpur", state: "Madhya Pradesh", coordinates: [79.9864, 23.1815], risk: "High", temperature: 43 },
-  { name: "Gwalior", state: "Madhya Pradesh", coordinates: [78.1828, 26.2183], risk: "Extreme", temperature: 45 },
-
-  { name: "Kolkata", state: "West Bengal", coordinates: [88.3639, 22.5726], risk: "Extreme", temperature: 42 },
-  { name: "Siliguri", state: "West Bengal", coordinates: [88.3953, 26.7271], risk: "Moderate", temperature: 37 },
-  { name: "Patna", state: "Bihar", coordinates: [85.1376, 25.5941], risk: "Extreme", temperature: 45 },
-  { name: "Ranchi", state: "Jharkhand", coordinates: [85.3096, 23.3441], risk: "Moderate", temperature: 39 },
-  { name: "Bhubaneswar", state: "Odisha", coordinates: [85.8245, 20.2961], risk: "High", temperature: 40 },
-  { name: "Guwahati", state: "Assam", coordinates: [91.7362, 26.1445], risk: "Moderate", temperature: 37 },
-  { name: "Raipur", state: "Chhattisgarh", coordinates: [81.6296, 21.2514], risk: "Extreme", temperature: 44 },
-
-  { name: "Bengaluru", state: "Karnataka", coordinates: [77.5946, 12.9716], risk: "Moderate", temperature: 34 },
-  { name: "Hyderabad", state: "Telangana", coordinates: [78.4867, 17.385], risk: "High", temperature: 42 },
-  { name: "Chennai", state: "Tamil Nadu", coordinates: [80.2707, 13.0827], risk: "High", temperature: 39 },
-  { name: "Coimbatore", state: "Tamil Nadu", coordinates: [76.9558, 11.0168], risk: "Moderate", temperature: 35 },
-  { name: "Madurai", state: "Tamil Nadu", coordinates: [78.1198, 9.9252], risk: "High", temperature: 40 },
-  { name: "Kochi", state: "Kerala", coordinates: [76.2673, 9.9312], risk: "Moderate", temperature: 34 },
-  { name: "Thiruvananthapuram", state: "Kerala", coordinates: [76.9366, 8.5241], risk: "Moderate", temperature: 33 },
-  { name: "Vijayawada", state: "Andhra Pradesh", coordinates: [80.648, 16.5062], risk: "High", temperature: 43 },
-  { name: "Visakhapatnam", state: "Andhra Pradesh", coordinates: [83.2185, 17.6868], risk: "High", temperature: 39 },
-  { name: "Mysuru", state: "Karnataka", coordinates: [76.6394, 12.2958], risk: "Low", temperature: 33 },
-
-  { name: "Shimla", state: "Himachal Pradesh", coordinates: [77.1734, 31.1048], risk: "Low", temperature: 29 },
-  { name: "Srinagar", state: "Jammu & Kashmir", coordinates: [74.7973, 34.0837], risk: "Low", temperature: 31 },
-  { name: "Jammu", state: "Jammu & Kashmir", coordinates: [74.857, 32.7266], risk: "Moderate", temperature: 39 },
-];
-
-const riskColor = {
-  Extreme: "#dc2626",
-  High: "#f97316",
-  Moderate: "#eab308",
-  Low: "#16a34a",
-};
-
-const stats = [
-  { label: "Cities Tracked", value: "45+" },
-  { label: "States Covered", value: "20+" },
-  { label: "Extreme Risk Cities", value: cities.filter((c) => c.risk === "Extreme").length.toString() },
-  { label: "Peak Temp Recorded", value: `${Math.max(...cities.map((c) => c.temperature))}°C` },
-];
-
-const timeline = [
-  { year: "2015", title: "Andhra Pradesh & Telangana Heatwave", desc: "One of India's deadliest heatwaves, with over 2,000 reported deaths across the two states." },
-  { year: "2019", title: "Northern Plains Heatwave", desc: "Prolonged extreme heat across Rajasthan, Delhi, and UP, with temperatures crossing 48°C in places." },
-  { year: "2022", title: "Early & Intense Summer", desc: "India recorded its hottest March in over a century, disrupting agriculture and power supply." },
-  { year: "2024", title: "Record-Breaking Delhi Heat", desc: "Delhi recorded some of its highest-ever temperatures, prompting heat action plans across NCR." },
-];
-
-const faqs = [
-  { q: "What is a heatwave?", a: "A heatwave is a prolonged period of abnormally high temperatures, typically when temperatures exceed the normal maximum by a significant margin for two or more consecutive days." },
-  { q: "How does IMD classify a heatwave?", a: "The India Meteorological Department classifies a heatwave when the maximum temperature reaches at least 40°C in plains and 30°C in hilly regions, with a departure of 4.5°C or more from normal." },
-  { q: "Who is most at risk during a heatwave?", a: "Elderly people, infants, outdoor laborers, and those with pre-existing health conditions face the highest risk of heat-related illness." },
-  { q: "What should I do during a heat alert?", a: "Stay indoors during peak hours, drink plenty of water, wear light clothing, and avoid strenuous activity between 12 PM and 4 PM." },
-];
+type View = 'atlas' | 'compare' | 'lab' | 'research';
+const allCities = weather.cities as City[];
+const views = [{ id: 'atlas', label: 'Risk atlas', icon: Globe2 }, { id: 'compare', label: 'Compare cities', icon: Layers }, { id: 'lab', label: 'Scenario lab', icon: FlaskConical }, { id: 'research', label: 'Research & sources', icon: BookOpen }] as const;
+const toolStyle = { background: '#fff', border: '1px solid #dee4da', borderRadius: 12, color: '#153e32', fontSize: 12, boxShadow: '0 8px 30px #153e3210' };
+const originalParams = new URLSearchParams(window.location.search);
+const initialYear = originalParams.get('year') === '2025' ? 2025 : 2024;
+const initialView = views.some(v => v.id === originalParams.get('view')) ? originalParams.get('view') as View : 'atlas';
 
 export default function Home() {
-  const [selectedCity, setSelectedCity] = useState<City | null>(cities[0]);
-  const [filter, setFilter] = useState("All");
-  const [search, setSearch] = useState("");
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  const filteredCities = useMemo(() => {
-    return cities.filter((city) => {
-      const matchesRisk = filter === "All" || city.risk === filter;
-      const matchesSearch =
-        city.name.toLowerCase().includes(search.toLowerCase()) ||
-        city.state.toLowerCase().includes(search.toLowerCase());
-
-      return matchesRisk && matchesSearch;
-    });
-  }, [filter, search]);
-
-  const sortedCities = useMemo(() => {
-    const order = { Extreme: 0, High: 1, Moderate: 2, Low: 3 };
-    return [...cities].sort((a, b) => order[a.risk] - order[b.risk] || b.temperature - a.temperature);
-  }, []);
-
-  return (
-    <main className="heat-page">
-      <header className="hero">
-        <div>
-          <p className="eyebrow">INDIA • URBAN CLIMATE INTELLIGENCE</p>
-
-          <h1>
-            Heat Risk
-            <span> Mapping</span>
-          </h1>
-
-          <p className="subtitle">
-            Explore heat exposure across major Indian cities.
-          </p>
+  const [view, setView] = useState<View>(initialView);
+  const [year, setYear] = useState(initialYear);
+  const [selectedId, setSelectedId] = useState(originalParams.get('city') || 'delhi');
+  const [search, setSearch] = useState('');
+  const [region, setRegion] = useState('India');
+  const [tier, setTier] = useState<'all' | Tier>('all');
+  const [compareIds, setCompareIds] = useState(['delhi', 'mumbai', 'bengaluru']);
+  const [message, setMessage] = useState('');
+  const cities = allCities.filter(c => c.year === year);
+  const ranked = [...cities].sort((a, b) => scoreHeat(b).score - scoreHeat(a).score);
+  const filtered = ranked.filter(c => (region === 'India' || c.state.includes(region)) && (tier === 'all' || scoreHeat(c).tier === tier) && `${c.name} ${c.state}`.toLowerCase().includes(search.toLowerCase().trim()));
+  const selected = filtered.find(c => c.id === selectedId) || filtered[0];
+  const baseCity = cities.find(c => c.id === selectedId) || cities[0];
+  const hottest = [...cities].sort((a, b) => b.peak - a.peak)[0];
+  const average = Math.round(cities.reduce((sum, c) => sum + scoreHeat(c).score, 0) / cities.length);
+  const go = (next: View) => { setView(next); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const exportCsv = () => { downloadFile(csvFor(view === 'compare' ? cities.filter(c => compareIds.includes(c.id)) : filtered), `heatmap-${year}-${view}.csv`); setMessage('CSV downloaded with source and model information.'); };
+  const addCompare = (id: string) => {
+    if (compareIds.includes(id)) { go('compare'); return; }
+    if (compareIds.length >= 4) { setMessage('Compare up to four cities. Remove one in Compare cities first.'); return; }
+    setCompareIds(v => [...v, id]); go('compare');
+  };
+  const share = async () => {
+    const url = new URL(window.location.href); url.search = new URLSearchParams({ view, year: String(year), city: (selected || baseCity).id }).toString();
+    try { await navigator.clipboard.writeText(url.toString()); setMessage('View link copied. It opens on devices that can reach this website.'); } catch { setMessage('Your browser could not copy the link. Copy the address from the address bar.'); window.history.replaceState(null, '', url); }
+  };
+  return <div className="app-shell">
+    <a className="skip-link" href="#main-content">Skip to content</a>
+    <aside className="sidebar"><a href="#" className="brand" onClick={e => { e.preventDefault(); go('atlas'); }}><span className="brand-mark"><Sun size={24}/></span><span>heatmap<span className="brand-country">INDIA</span></span></a>
+      <div className="sidebar-caption">THE CLIMATE OBSERVATORY</div><nav aria-label="Main navigation">{views.map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'nav-item active' : 'nav-item'} onClick={() => go(id)} aria-current={view === id ? 'page' : undefined}><Icon size={18}/>{label}{view === id && <span className="nav-dot"/>}</button>)}</nav>
+      <div className="sidebar-project"><div className="tiny-sun"><Compass size={25}/></div><h3>A small project.<br/>A shared future.</h3><p>Understanding heat is the first step toward more resilient cities.</p><button onClick={() => go('research')}>Explore the research <ArrowUpRight size={15}/></button></div>
+      <div className="sidebar-footer"><span className="edition-dot"/> CHE110 · ENVIRONMENTAL STUDIES<small>Lovely Professional University<br/>Academic project · 2026</small></div>
+    </aside>
+    <div className="workspace"><header className="topbar"><div className="breadcrumb">Observatory <ChevronRight size={13}/><strong>{views.find(v => v.id === view)?.label}</strong></div><div className="top-actions"><span className="research-status"><span/> Research edition</span><button className="icon-button" aria-label="Copy a link to this view" onClick={share}><Share2 size={17}/></button><button className="outline-button export-top" onClick={exportCsv}><Download size={15}/> Export data</button></div></header>
+      <main id="main-content" className={`view-${view}`}>
+        <div className="mobile-brand"><Sun size={22}/> HeatMap India</div>
+        <div className="page-heading"><div className="heading-copy"><p className="eyebrow">{view === 'atlas' ? 'MAKE THE INVISIBLE VISIBLE' : view === 'compare' ? 'CONTEXT CHANGES THE PICTURE' : view === 'lab' ? 'A SPACE FOR BETTER QUESTIONS' : 'THE SCIENCE BEHIND THE SCREEN'}</p><h1>{view === 'atlas' ? <>See the heat.<br/><span>Find the pattern.</span></> : view === 'compare' ? <>Different cities.<br/><span>Different heat stories.</span></> : view === 'lab' ? <>Change a variable.<br/><span>Explore the impact.</span></> : <>Good maps begin<br/><span>with good questions.</span></>}</h1><p className="heading-description">{view === 'atlas' ? 'Explore heat exposure across 25 Indian cities. Understand the signals, compare the patterns, and turn awareness into action.' : view === 'compare' ? 'Look beyond a single temperature. Compare the intensity, persistence, and nighttime burden of heat in up to four cities.' : view === 'lab' ? 'An open, explainable model. Adjust the heat indicators to see how a hypothetical scenario changes the index.' : 'A transparent student investigation into digital heatwave risk mapping for Indian cities. Every number has a source. Every model has limits.'}</p></div>
+          {view === 'atlas' ? <div className="hero-art"><div className="contours"/><span className="eyebrow">25 CITIES. ONE SHARED CHALLENGE.</span><div className="sun-disc"/><div className="art-coordinates">28.6139° N<br/>77.2090° E</div><div className="art-bottom"><span>Our cities are connected.<br/><b>So is their future.</b></span><ArrowUpRight size={26}/></div></div> : <div className="page-side-note"><Globe2 size={28}/><strong>25 cities · 2 complete years</strong><p>ERA5 reanalysis via Open-Meteo.<br/>A reproducible, temperature-based study.</p><a href="/data/provenance.json" target="_blank" rel="noreferrer">View data provenance <ArrowUpRight size={14}/></a></div>}
         </div>
-
-        <div className="hero-stat">
-          <strong>{cities.length}</strong>
-          <span>cities mapped</span>
-        </div>
-      </header>
-
-      <section className="stats-section">
-        {stats.map((s) => (
-          <div className="stat-card" key={s.label}>
-            <strong>{s.value}</strong>
-            <span>{s.label}</span>
-          </div>
-        ))}
-      </section>
-
-      <section className="map-section">
-        <div className="map-header">
-          <div>
-            <h2>Indian City Heat Risk</h2>
-            <p>
-              Select a city to inspect its current risk profile.
-            </p>
-          </div>
-
-          <input
-            className="city-search"
-            placeholder="Search city or state..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        <div className="risk-filters">
-          {["All", "Extreme", "High", "Moderate", "Low"].map((level) => (
-            <button
-              key={level}
-              className={filter === level ? "active" : ""}
-              onClick={() => setFilter(level)}
-            >
-              {level !== "All" && (
-                <span
-                  className="filter-dot"
-                  style={{
-                    background:
-                      riskColor[level as keyof typeof riskColor],
-                  }}
-                />
-              )}
-              {level}
-            </button>
-          ))}
-        </div>
-
-        <div className="map-layout">
-          <div className="india-map-card">
-            <ComposableMap
-              projection="geoMercator"
-              projectionConfig={{
-                center: [82, 22],
-                scale: 1050,
-              }}
-              width={600}
-              height={560}
-              style={{
-                width: "100%",
-                height: "auto",
-              }}
-            >
-              <Geographies geography={INDIA_GEO_URL}>
-                {({ geographies }) =>
-                  geographies.map((geo) => (
-                    <Geography
-                      key={geo.rsmKey}
-                      geography={geo}
-                      fill="#eef5ed"
-                      stroke="#9fb4a1"
-                      strokeWidth={0.7}
-                      style={{
-                        outline: "none",
-                      }}
-                    />
-                  ))
-                }
-              </Geographies>
-
-              {filteredCities.map((city) => (
-                <Marker
-                  key={city.name}
-                  coordinates={city.coordinates}
-                  onClick={() => setSelectedCity(city)}
-                  style={{
-                    cursor: "pointer",
-                  }}
-                >
-                  <circle
-                    r={selectedCity?.name === city.name ? 7 : 4}
-                    fill={riskColor[city.risk]}
-                    stroke="#ffffff"
-                    strokeWidth={2}
-                  />
-
-                  {selectedCity?.name === city.name && (
-                    <text
-                      textAnchor="middle"
-                      y={-12}
-                      style={{
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "10px",
-                        fontWeight: 700,
-                        fill: "#172019",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      {city.name}
-                    </text>
-                  )}
-                </Marker>
-              ))}
-            </ComposableMap>
-
-            <div className="map-note">
-              <span />
-              Geographic city locations • Risk visualization
-            </div>
-          </div>
-
-          <aside className="city-panel">
-            {selectedCity ? (
-              <>
-                <div className="selected-label">SELECTED CITY</div>
-
-                <h2>{selectedCity.name}</h2>
-
-                <p className="state-name">
-                  {selectedCity.state}
-                </p>
-
-                <div
-                  className="risk-badge"
-                  style={{
-                    background: `${riskColor[selectedCity.risk]}18`,
-                    color: riskColor[selectedCity.risk],
-                  }}
-                >
-                  <span
-                    style={{
-                      background: riskColor[selectedCity.risk],
-                    }}
-                  />
-                  {selectedCity.risk} Risk
-                </div>
-
-                <div className="temperature">
-                  <strong>{selectedCity.temperature}°</strong>
-                  <span>peak temperature indicator</span>
-                </div>
-
-                <div className="coordinates">
-                  <div>
-                    <span>LATITUDE</span>
-                    <strong>
-                      {selectedCity.coordinates[1].toFixed(4)}°
-                    </strong>
-                  </div>
-
-                  <div>
-                    <span>LONGITUDE</span>
-                    <strong>
-                      {selectedCity.coordinates[0].toFixed(4)}°
-                    </strong>
-                  </div>
-                </div>
-
-                <div className="panel-message">
-                  <strong>Research data layer</strong>
-                  <p>
-                    This panel is ready to be connected to the
-                    verified heat-risk dataset in the next step.
-                  </p>
-                </div>
-              </>
-            ) : (
-              <p>Select a city on the map.</p>
-            )}
-          </aside>
-        </div>
-      </section>
-
-      <section className="info-section">
-        <h2>Why Urban Heatwaves Are Rising</h2>
-        <div className="info-grid">
-          <div className="info-card">
-            <h3>Urban Heat Island Effect</h3>
-            <p>Concrete, asphalt, and glass buildings absorb and trap heat, making cities significantly hotter than surrounding rural areas — often by 2-5°C.</p>
-          </div>
-          <div className="info-card">
-            <h3>Loss of Green Cover</h3>
-            <p>Rapid deforestation and shrinking parks reduce natural cooling, removing shade and evapotranspiration that once regulated local temperatures.</p>
-          </div>
-          <div className="info-card">
-            <h3>Vehicle & Industrial Emissions</h3>
-            <p>Traffic congestion and industrial activity release waste heat and greenhouse gases, compounding local warming in dense urban zones.</p>
-          </div>
-          <div className="info-card">
-            <h3>Climate Change</h3>
-            <p>Rising global temperatures are intensifying the frequency, duration, and severity of heatwave events across Indian cities year on year.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="info-section">
-        <h2>Health Impact of Extreme Heat</h2>
-        <div className="info-grid">
-          <div className="info-card">
-            <h3>Heatstroke & Exhaustion</h3>
-            <p>Prolonged exposure can cause dizziness, nausea, rapid heartbeat, and in severe cases, life-threatening heatstroke.</p>
-          </div>
-          <div className="info-card">
-            <h3>Vulnerable Groups</h3>
-            <p>Elderly people, outdoor workers, children, and those with chronic illnesses face the highest risk during extreme heat events.</p>
-          </div>
-          <div className="info-card">
-            <h3>Dehydration</h3>
-            <p>High temperatures accelerate fluid loss, leading to dehydration, kidney strain, and reduced physical and mental performance.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="info-section">
-        <h2>Prevention & Mitigation</h2>
-        <div className="info-grid">
-          <div className="info-card">
-            <h3>Stay Hydrated</h3>
-            <p>Drink water regularly throughout the day, even without feeling thirsty, and avoid excess caffeine or alcohol.</p>
-          </div>
-          <div className="info-card">
-            <h3>Avoid Peak Hours</h3>
-            <p>Limit outdoor activity between 12 PM and 4 PM when temperatures and UV exposure are highest.</p>
-          </div>
-          <div className="info-card">
-            <h3>Urban Greening</h3>
-            <p>Expanding tree cover, green roofs, and water bodies in cities can meaningfully reduce local heat buildup.</p>
-          </div>
-          <div className="info-card">
-            <h3>Cooling Shelters</h3>
-            <p>Public cooling centers and shaded community spaces help protect vulnerable populations during heatwave alerts.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="table-section">
-        <h2>City Risk Ranking</h2>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>City</th>
-                <th>State</th>
-                <th>Risk Level</th>
-                <th>Peak Temp</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedCities.map((city) => (
-                <tr key={city.name}>
-                  <td>{city.name}</td>
-                  <td>{city.state}</td>
-                  <td>
-                    <span
-                      className="table-badge"
-                      style={{
-                        background: `${riskColor[city.risk]}18`,
-                        color: riskColor[city.risk],
-                      }}
-                    >
-                      {city.risk}
-                    </span>
-                  </td>
-                  <td>{city.temperature}°C</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="timeline-section">
-        <h2>Major Heatwave Events in India</h2>
-        <div className="timeline">
-          {timeline.map((t) => (
-            <div className="timeline-item" key={t.year}>
-              <div className="timeline-year">{t.year}</div>
-              <div className="timeline-content">
-                <h3>{t.title}</h3>
-                <p>{t.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="faq-section">
-        <h2>Frequently Asked Questions</h2>
-        <div className="faq-list">
-          {faqs.map((f, i) => (
-            <div className="faq-item" key={f.q}>
-              <button
-                className="faq-question"
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              >
-                {f.q}
-                <span>{openFaq === i ? "−" : "+"}</span>
-              </button>
-              {openFaq === i && <p className="faq-answer">{f.a}</p>}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="about-section">
-        <h2>About This Project</h2>
-        <p>
-          This Digital Heatwave Risk Mapping tool was developed as part of the CHE110
-          (Environmental Studies) CA1 assignment at Lovely Professional University (LPU).
-        </p>
-        <p>
-          <strong>Team:</strong> Prashanth Reddy Karrennagari, Arpan Raj, Swarnadipta Roy
-        </p>
-        <p className="note">
-          City temperature and risk data shown here is illustrative, intended to
-          demonstrate the concept of a real-time heat risk monitoring platform.
-        </p>
-      </section>
-    </main>
-  );
+        <div className="context-bar"><div><span className="data-dot"/><b>Historical study</b><span className="context-detail">ERA5 reanalysis · Jan–Dec {year}</span></div><label className="year-control">Study year <select aria-label="Study year" value={year} onChange={e => setYear(Number(e.target.value))}><option>2024</option><option>2025</option></select></label></div>
+        {view === 'atlas' && <>
+          <section className="kpi-grid" aria-label="All-city summary"><Kpi title="Cities in the study" value="25" unit="cities" sub="Same locations in both years" icon={<MapPin size={18}/>}/><Kpi title="Highest modeled peak" value={hottest.peak.toFixed(1)} unit="°C" sub={hottest.name} icon={<Thermometer size={18}/>} accent/><Kpi title="Cities with ≥40°C days" value={cities.filter(c => c.hotDays > 0).length} unit="/ 25" sub="Project hot-day threshold" icon={<Sun size={18}/>}/><Kpi title="Mean heat index" value={average} unit="/ 100" sub="Unweighted mean of study cities" icon={<SlidersHorizontal size={18}/>}/></section>
+          <section className="panel atlas-panel" id="atlas"><div className="panel-heading"><div><span className="section-number">01 / EXPLORE</span><h2>Your city. In context.</h2></div><span className="subtle-tag"><span/> {year} historical data</span></div>
+            <div className="atlas-toolbar"><label className="search-box"><Search size={16}/><input aria-label="Search city or state" placeholder="Find a city or state…" value={search} onChange={e => setSearch(e.target.value)}/>{search && <button aria-label="Clear search" onClick={() => setSearch('')}><X size={14}/></button>}</label><label className="region-control"><MapPin size={15}/><select aria-label="Region" value={region} onChange={e => setRegion(e.target.value)}><option value="India">All India</option><option value="Punjab">Punjab spotlight</option><option value="Maharashtra">Maharashtra</option><option value="Gujarat">Gujarat</option></select></label><div className="tier-filters" aria-label="Filter by index tier">{(['all', 'very_high', 'high', 'moderate', 'low'] as const).map(t => <button key={t} className={tier === t ? 'active' : ''} aria-pressed={tier === t} onClick={() => setTier(t)}>{t !== 'all' && <i style={{ background: tierMeta[t].color }}/>} {t === 'all' ? 'All' : tierMeta[t].label}</button>)}</div></div>
+            <div className="atlas-layout"><HeatAtlas key={region} cities={filtered} selected={selected} select={setSelectedId} region={region}/>{selected ? <CityInspector key={`${selected.id}-${year}`} city={selected} compare={() => addCompare(selected.id)} scenario={() => { setSelectedId(selected.id); go('lab'); }}/>: <aside className="empty-state"><Search size={28}/><h3>No matching cities</h3><p>Try another name or broaden the filters.</p><button className="primary-button" onClick={() => { setSearch(''); setTier('all'); setRegion('India'); }}>Reset filters</button></aside>}</div>
+            <div className="atlas-footnote"><CircleHelp size={14}/><span>Colors show our educational heat index—not official IMD alerts. The map measures temperature signals, not population vulnerability.</span><button onClick={() => go('research')}>How it works <ArrowRight size={14}/></button></div>
+          </section>
+          <div className="overview-lower"><section className="panel ranking"><div className="panel-heading"><div><span className="section-number">02 / COMPARE</span><h2>Heat, ranked.</h2></div><span className="small-muted">{filtered.length} cities</span></div><div className="rank-head"><span>CITY / STATE</span><span>INDEX</span></div><div className="rank-list">{filtered.length ? filtered.map((c, i) => <button key={c.id} className={selected?.id === c.id ? 'rank-row selected' : 'rank-row'} onClick={() => { setSelectedId(c.id); document.getElementById('atlas')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}><span className="rank-num">{String(i + 1).padStart(2, '0')}</span><span className="rank-city"><b>{c.name}</b><small>{c.state}</small></span><span className="rank-bar"><i style={{ width: `${scoreHeat(c).score}%`, background: tierMeta[scoreHeat(c).tier].color }}/></span><b className="rank-score">{scoreHeat(c).score}</b><ChevronRight size={14}/></button>) : <p className="empty-inline">No cities match the current filters.</p>}</div><button className="text-button full-width" onClick={() => go('compare')}>Build a city comparison <ArrowRight size={16}/></button></section>
+          <section className="panel seasonal"><div className="panel-heading"><div><span className="section-number">03 / UNDERSTAND</span><h2>A year of heat.</h2></div><span className="small-muted">{selected?.name || 'No city selected'}</span></div>{selected ? <><p className="chart-description">Monthly mean of daily maxima and minima · {year}</p><div className="chart-legend"><span><i style={{ background: '#e98343' }}/> Daytime high</span><span><i style={{ background: '#4e8a78' }}/> Nighttime low</span></div><div className="seasonal-chart"><ResponsiveContainer width="100%" height="100%"><AreaChart data={selected.monthly.map(m => ({ ...m, label: monthNames[m.month - 1] }))} margin={{ top: 15, right: 15, bottom: 5, left: -20 }}><defs><linearGradient id="area-heat" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ed9156" stopOpacity={.2}/><stop offset="100%" stopColor="#ed9156" stopOpacity={0}/></linearGradient></defs><CartesianGrid stroke="#e8ece4" vertical={false}/><XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: '#7b877b' }}/><YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: '#7b877b' }} unit="°"/><Tooltip contentStyle={toolStyle} formatter={v => `${v}°C`}/><Area type="monotone" name="Mean daily maximum" dataKey="high" stroke="#e98343" fill="url(#area-heat)" strokeWidth={2.5}/><Area type="monotone" name="Mean daily minimum" dataKey="low" stroke="#4e8a78" fill="transparent" strokeWidth={2.5}/></AreaChart></ResponsiveContainer></div><p className="chart-note">One year shows seasonality. Two years alone cannot establish a long-term climate trend.</p></> : <p className="empty-inline">Select a matching city to see its seasonal pattern.</p>}</section></div>
+          <section className="action-banner"><div className="action-icon"><Trees size={30}/></div><div><span className="eyebrow">FROM AWARENESS TO ACTION</span><h2>Understanding heat is only the beginning.</h2><p>Explore shade, safer work schedules, and better urban design.</p></div><button className="primary-button" onClick={() => go('research')}>Explore solutions <ArrowUpRight size={17}/></button></section>
+        </>}
+        {view === 'compare' && <Compare cities={cities} ids={compareIds} setIds={setCompareIds} exportCsv={exportCsv}/>}
+        {view === 'lab' && <Scenario key={`${baseCity.id}-${year}`} city={baseCity} cities={cities} changeCity={setSelectedId}/>}
+        {view === 'research' && <Research/>}
+        <footer className="footer"><span><Sun size={16}/> HeatMap India <span className="footer-divider">/</span> Built for awareness. Grounded in evidence.</span><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Weather data by Open-Meteo <ExternalLink size={12}/></a></footer>
+      </main>
+    </div>
+    {message && <div className="toast" role="status"><Check size={18}/><span>{message}</span><button aria-label="Dismiss notification" onClick={() => setMessage('')}><X size={16}/></button></div>}
+  </div>;
 }
+function Kpi({ title, value, unit, sub, icon, accent = false }: { title: string; value: string | number; unit: string; sub: string; icon: ReactNode; accent?: boolean }) {
+  return <article className={`kpi ${accent ? 'kpi-accent' : ''}`}><div className="kpi-top"><span>{title}</span>{icon}</div><strong>{value}<small>{unit}</small></strong><p>{sub}</p></article>;
+}
+function TierBadge({ city }: { city: HeatInputs }) { const meta = tierMeta[scoreHeat(city).tier]; return <span className="tier-badge" style={{ color: meta.color, background: meta.tint }}><i style={{ background: meta.color }}/>{meta.label}</span>; }
+function CityInspector({ city, compare, scenario }: { city: City; compare: () => void; scenario: () => void }) {
+  const [forecastEnabled, setForecastEnabled] = useState(false);
+  const forecast = useQuery({ queryKey: ['forecast', city.id], queryFn: ({ signal }) => fetchForecast(city, signal), enabled: forecastEnabled, retry: false, staleTime: 15 * 60 * 1000 });
+  const { score, components, tier } = scoreHeat(city);
+  return <aside className="inspector"><div className="inspector-top"><span className="eyebrow">CITY SPOTLIGHT</span><MapPin size={16}/></div><div className="city-title"><h3>{city.name}</h3><p>{city.state} · {city.year}</p></div><div className="index-display"><div className="index-ring" style={{ background: `conic-gradient(${tierMeta[tier].color} ${score}%, #edf0e9 0)` }}><div><strong>{score}</strong><small>OUT OF 100</small></div></div><div><TierBadge city={city}/><h4>Heat exposure index</h4><p>Educational screening score</p></div></div><div className="city-metrics"><div><span><Thermometer size={14}/>Annual peak</span><b>{city.peak.toFixed(1)}<small>°C</small></b></div><div><span><Sun size={14}/>Hot days ≥40°C</span><b>{city.hotDays}<small>days</small></b></div><div><span><Moon size={14}/>Warm nights ≥25°C</span><b>{city.warmNights}<small>nights</small></b></div></div><div className="driver-title">WHAT DRIVES THIS SCORE <span>POINTS</span></div>{['Peak intensity', 'Hot-day persistence', 'Nighttime burden'].map((name, i) => <div className="driver" key={name}><div><span>{name}</span><b>{components[i].toFixed(1)}</b></div><div className="driver-track"><i style={{ width: `${components[i] / [45, 35, 20][i] * 100}%`, background: ['#e2874c', '#d5ae62', '#528875'][i] }}/></div></div>)}<button className="primary-button inspector-action" onClick={compare}>Compare this city <ArrowRight size={16}/></button><button className="text-button full-width" onClick={scenario}>Model a scenario <FlaskConical size={14}/></button><div className="inspector-source"><ShieldCheck size={14}/><span>{city.days}/{city.days} complete days · ERA5 reanalysis<br/>Grid estimate, not an individual weather station.</span></div>
+    <div className="forecast-box"><button className="forecast-trigger" onClick={() => setForecastEnabled(v => !v)} aria-expanded={forecastEnabled}><CloudSun size={17}/>{forecastEnabled ? 'Hide current forecast' : 'Check the next 7 days'}<ChevronRight size={14}/></button>{forecastEnabled && <div className="forecast-content">{forecast.isPending ? <p role="status">Fetching the latest forecast…</p> : forecast.isError ? <div role="alert"><p>{forecast.error.message}</p><button className="text-button" onClick={() => forecast.refetch()}><RefreshCw size={13}/>Retry</button></div> : <><p>Current forecast · separate from {city.year} study</p><div className="forecast-days">{forecast.data?.map(d => <div key={d.date}><small>{d.date.slice(5)}</small><strong>{Math.round(d.high)}°</strong><span>{Math.round(d.low)}°</span></div>)}</div><small>High / low °C · fetched {new Date(forecast.dataUpdatedAt).toLocaleString()} · Open-Meteo</small><button className="text-button" disabled={forecast.isFetching} onClick={() => forecast.refetch()}><RefreshCw size={12}/>{forecast.isFetching ? 'Refreshing…' : 'Refresh forecast'}</button></>}</div>}</div>
+  </aside>;
+}
+function Compare({ cities, ids, setIds, exportCsv }: { cities: City[]; ids: string[]; setIds: (ids: string[]) => void; exportCsv: () => void }) {
+  const chosen = cities.filter(c => ids.includes(c.id));
+  return <section className="panel compare-panel"><div className="panel-heading"><div><span className="section-number">SIDE BY SIDE</span><h2>Build your comparison.</h2></div><span className="subtle-tag">{chosen.length} of 4 selected</span></div><p className="section-description">Select two to four cities. All values use the same calendar year and model.</p><div className="city-chips">{cities.map(c => <button key={c.id} aria-pressed={ids.includes(c.id)} disabled={!ids.includes(c.id) && ids.length >= 4} className={ids.includes(c.id) ? 'active' : ''} onClick={() => setIds(ids.includes(c.id) ? ids.filter(id => id !== c.id) : [...ids, c.id])}>{ids.includes(c.id) ? <Check size={13}/> : <PlusSmall/>}{c.name}</button>)}</div>{chosen.length < 2 ? <div className="comparison-empty"><Layers size={36}/><h3>Every city needs a little context.</h3><p>Choose at least two cities above to compare their heat profiles.</p></div> : <><div className="comparison-cards" style={{ gridTemplateColumns: `repeat(${chosen.length}, minmax(0, 1fr))` }}>{chosen.map(c => <article key={c.id}><div className="comparison-city"><MapPin size={16}/><span>{c.state}</span></div><h3>{c.name}</h3><strong className="comparison-score">{scoreHeat(c).score}<small>/100</small></strong><TierBadge city={c}/><div className="stacked-bar">{scoreHeat(c).components.map((v, i) => <i key={i} style={{ width: `${v}%`, background: ['#e2874c', '#d5ae62', '#528875'][i] }}/>)}</div><small className="small-muted">Index contributions shown above</small></article>)}</div><div className="table-scroll"><table><caption>Temperature-based indicators · {cities[0].year}</caption><thead><tr><th scope="col">Indicator</th>{chosen.map(c => <th scope="col" key={c.id}>{c.name}</th>)}</tr></thead><tbody>{[{ label: 'Peak temperature', value: (c: City) => `${c.peak.toFixed(1)}°C` }, { label: 'Days with maximum ≥40°C', value: (c: City) => c.hotDays }, { label: 'Nights with minimum ≥25°C', value: (c: City) => c.warmNights }, { label: 'Complete daily records', value: (c: City) => c.days }].map(row => <tr key={row.label}><th scope="row">{row.label}</th>{chosen.map(c => <td key={c.id}>{row.value(c)}</td>)}</tr>)}</tbody></table></div><div className="comparison-insight"><CircleHelp size={20}/><p><b>{[...chosen].sort((a, b) => b.hotDays - a.hotDays)[0].name}</b> has the most ≥40°C days among your selection ({Math.max(...chosen.map(c => c.hotDays))}). Humidity, housing, occupation, and access to cooling can change real-world risk; this index does not measure them.</p></div><button className="outline-button" onClick={exportCsv}><ArrowDownToLine size={16}/>Download comparison CSV</button></>}</section>;
+}
+function PlusSmall() { return <span aria-hidden="true">+</span>; }
+function Scenario({ city, cities, changeCity }: { city: City; cities: City[]; changeCity: (id: string) => void }) {
+  const [values, setValues] = useState<HeatInputs>({ peak: city.peak, hotDays: city.hotDays, warmNights: city.warmNights });
+  const before = scoreHeat(city), after = scoreHeat(values), difference = after.score - before.score;
+  const reset = () => setValues({ peak: city.peak, hotDays: city.hotDays, warmNights: city.warmNights });
+  const inputs = [{ key: 'peak', label: 'Annual peak temperature', unit: '°C', min: 20, max: 55, step: .1, info: 'Intensity: scaled from 30°C to 48°C.', icon: Thermometer }, { key: 'hotDays', label: 'Days with maximum ≥40°C', unit: 'days', min: 0, max: city.days, step: 1, info: 'Persistence: reaches its cap at 60 days.', icon: Sun }, { key: 'warmNights', label: 'Nights with minimum ≥25°C', unit: 'nights', min: 0, max: city.days, step: 1, info: 'Nighttime burden: reaches its cap at 150 nights.', icon: Moon }] as const;
+  return <><section className="panel lab-panel"><div className="panel-heading"><div><span className="section-number">THE WHAT-IF LAB</span><h2>Small changes. Visible differences.</h2></div><label className="base-selector">Start with <select aria-label="Scenario baseline city" value={city.id} onChange={e => changeCity(e.target.value)}>{cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label></div><div className="lab-grid"><div className="lab-controls"><p className="section-description">Your baseline is {city.name}, {city.year}. Move the sliders to explore an illustrative scenario.</p>{inputs.map(({ key, label, unit, min, max, step, info, icon: Icon }) => <div className="slider-control" key={key}><label htmlFor={`slider-${key}`}><span><Icon size={18}/>{label}</span><strong>{values[key].toFixed(key === 'peak' ? 1 : 0)}<small>{unit}</small></strong></label><input id={`slider-${key}`} type="range" min={min} max={max} step={step} value={values[key]} onChange={e => setValues(v => ({ ...v, [key]: Number(e.target.value) }))} style={{ background: `linear-gradient(to right, #377764 ${clamp((values[key] - min) / (max - min) * 100)}%, #e5e9df 0)` }}/><p>{info}</p></div>)}<div className="scenario-presets"><span>TRY A HYPOTHETICAL CHANGE</span><button onClick={() => setValues(v => ({ ...v, peak: Math.max(20, v.peak - 2) }))}>Peak −2°C</button><button onClick={() => setValues(v => ({ ...v, hotDays: Math.max(0, v.hotDays - 10) }))}>10 fewer hot days</button><button onClick={reset}><RotateIcon/>Reset to city</button></div></div><div className="scenario-result"><span className="eyebrow">YOUR SCENARIO</span><div className="scenario-number">{after.score}<small>/100</small></div><TierBadge city={values}/><div className={`score-delta ${difference > 0 ? 'increased' : ''}`}>{difference === 0 ? 'Matches the baseline' : `${difference > 0 ? '+' : '−'}${Math.abs(difference)} points from baseline`}</div><div className="before-after"><div><span>{city.year} baseline</span><b>{before.score}</b></div><ArrowRight size={19}/><div><span>Your scenario</span><b>{after.score}</b></div></div><p>This is a sensitivity experiment. It does not predict how much a real intervention would cool a city.</p><button className="outline-button" onClick={() => downloadFile(JSON.stringify({ baseline: { city: city.name, year: city.year, peak: city.peak, hotDays: city.hotDays, warmNights: city.warmNights, score: before.score }, scenario: { ...values, ...after }, model: 'HM-1', note: 'Hypothetical sensitivity experiment, not a forecast or validated health-risk estimate.' }, null, 2), `scenario-${city.id}.json`, 'application/json')}><Download size={14}/>Save scenario</button></div></div></section><div className="lab-explainer"><div><span>45%</span><h3>Peak intensity</h3><p>The hottest daily maximum of the year.</p></div><div><span>35%</span><h3>Hot-day persistence</h3><p>How often the daily maximum reaches 40°C.</p></div><div><span>20%</span><h3>Nighttime burden</h3><p>How often the daily minimum stays at or above 25°C.</p></div></div><p className="model-caution"><CircleHelp size={16}/>These weights and thresholds are project choices. Values are capped before weighting; this model is not calibrated against health outcomes.</p></>;
+}
+function RotateIcon() { return <RefreshCw size={13}/>; }
+function Research() {
+  return <div className="research-content"><section className="panel research-intro"><span className="section-number">OUR RESEARCH QUESTION</span><h2>How do the intensity, persistence, and nighttime burden of heat differ across Indian cities?</h2><p>HeatMap India investigates 25 selected cities over 2024 and 2025. The website turns daily weather estimates into an explorable map, city comparisons, and a transparent sensitivity model. The sample is purposive, includes a Punjab focus, and is not representative of all Indian cities.</p><div className="research-facts"><div><b>25</b><span>selected cities</span></div><div><b>18,275</b><span>daily temperature pairs</span></div><div><b>2</b><span>complete calendar years</span></div><div><b>100%</b><span>daily completeness checked</span></div></div></section>
+    <div className="research-columns"><section className="panel research-card"><span className="section-number">01 / DATA</span><h2>Weather estimates, with a paper trail.</h2><p>We use the ERA5 reanalysis model through Open-Meteo, requested for the same city coordinates and the Asia/Kolkata time zone. Reanalysis combines observations with a weather model. These are gridded estimates, not IMD station records.</p><p>Daily maximum and minimum 2-metre air temperatures are retained. Each city has 366 valid days in 2024 and 365 in 2025. No missing values were filled or invented.</p><p className="small-muted">Retrieved {new Date(weather.meta.retrievedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}. ERA5 is provided on an approximately 0.25° grid by this API; local conditions can differ.</p><div className="research-downloads"><a href="/data/era5-raw.json" download><Download size={15}/>Raw weather data</a><a href="/data/provenance.json" download><Download size={15}/>Request & checksum</a></div><Source href="https://open-meteo.com/en/docs/historical-weather-api" label="Open-Meteo Historical Weather API"/></section><section className="panel research-card"><span className="section-number">02 / METHOD</span><h2>A score you can inspect.</h2><p>Our HM-1 index summarizes three temperature signals. It is an educational screening model with project-selected weights, not an official warning scale.</p><div className="formula-block"><code>T = clamp((peak − 30) / 18, 0, 1)<br/>D = clamp(hot days / 60, 0, 1)<br/>N = clamp(warm nights / 150, 0, 1)<br/><b>Index = round(45T + 35D + 20N)</b></code></div><p>Hot day: daily maximum ≥40°C. Warm night: daily minimum ≥25°C. “Low” is 0–39; “Moderate” 40–59; “High” 60–74; “Very high” 75–100. These are project categories.</p><p className="small-muted">Changing the weights or thresholds can change rankings. The scenario lab lets you inspect input sensitivity.</p></section></div>
+    <section className="definition-banner"><CircleHelp size={26}/><div><h3>A hot day is not automatically an official heatwave.</h3><p>IMD uses criteria involving local temperature thresholds, departures from normal, and persistence across stations. Our simple ≥40°C counter does not implement that classification. Always consult IMD for current warnings.</p><Source href="https://mausam.imd.gov.in/responsive/heatwave_guidance.php" label="IMD heatwave guidance"/><Source href="https://internal.imd.gov.in/section/nhac/dynamic/fdpheatreport2019.pdf" label="IMD heatwave criteria · Annexure 5"/></div></section>
+    <section className="panel research-card"><span className="section-number">03 / INTERPRETATION</span><h2>Temperature tells part of the story.</h2><div className="limitations-grid"><div><Moon size={22}/><h3>Heat persists after sunset</h3><p>Warm nights can limit recovery from daytime heat. A peak temperature alone misses this part of exposure.</p></div><div><Trees size={22}/><h3>Place changes exposure</h3><p>Shade, vegetation, building materials, and access to cooling affect how people experience heat.</p></div><div><ShieldCheck size={22}/><h3>People have different needs</h3><p>Older people, children, outdoor workers, and people with chronic conditions can be more vulnerable.</p></div></div><p className="limitation-note">Our index excludes humidity, health conditions, population, housing, and occupation. It does not estimate illness, mortality, or total people at risk. A low index does not mean conditions are safe. Two years are insufficient to establish a climate-change trend.</p><Source href="https://www.who.int/news-room/fact-sheets/detail/climate-change-heat-and-health" label="WHO · Heat and health"/></section>
+    <section className="solutions-section"><div className="panel-heading"><div><span className="section-number">04 / RESPONSE</span><h2>Build awareness. Reduce exposure.</h2></div></div><div className="solution-cards"><article><span>01</span><Sun size={25}/><h3>Plan around the heat</h3><p>Use official forecasts, avoid strenuous activity during the hottest hours, and choose shaded or cooler spaces.</p></article><article><span>02</span><Trees size={25}/><h3>Design cooler places</h3><p>Investigate shade trees, cool roofs, and shaded public spaces. Local evidence is needed to assess their effects.</p></article><article><span>03</span><ShieldCheck size={25}/><h3>Look out for each other</h3><p>Check on vulnerable people and improve access to drinking water and cooling. Heatstroke is a medical emergency.</p></article></div><Source href="https://www.who.int/health-topics/heatwaves/" label="WHO · Heatwaves and preparedness"/></section>
+    <section className="panel research-card acknowledgements"><span className="section-number">05 / PROJECT & ACKNOWLEDGEMENTS</span><h2>Built to learn. Shared to inform.</h2><p>Digital Heatwave Risk Mapping for Indian Cities · CHE110 Environmental Studies · Lovely Professional University. Academic project, 2026. Prepared with AI assistance for research organization, coding, and drafting; factual claims and model limitations are documented for review.</p><p>Weather: Open-Meteo / ERA5, CC BY 4.0. Map geometry: Abhinav Swami’s India GeoJSON, MIT licence. The map is a visualization reference; it is not a legal boundary authority. IMD and WHO provide reference guidance and do not endorse this project.</p><div className="research-downloads"><a href="https://github.com/AbhinavSwami28/india-official-geojson" target="_blank" rel="noreferrer">Map source <ArrowUpRight size={15}/></a><a href="/MAP-LICENSE.txt" target="_blank" rel="noreferrer">Map licence <ArrowUpRight size={15}/></a><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">Data licence <ArrowUpRight size={15}/></a></div></section>
+  </div>;
+}
+function Source({ href, label }: { href: string; label: string }) { return <a className="source-link" href={href} target="_blank" rel="noreferrer">{label}<ArrowUpRight size={14}/></a>; }

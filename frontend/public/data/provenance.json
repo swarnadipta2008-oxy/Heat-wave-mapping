@@ -1,0 +1,14 @@
+{
+  "provider": "Open-Meteo",
+  "model": "ERA5",
+  "timezone": "Asia/Kolkata",
+  "retrievedAt": "2026-09-10T17:48:21.532737+00:00",
+  "request": "https://archive-api.open-meteo.com/v1/archive?latitude=28.6139%2C23.0225%2C21.1458%2C17.385%2C25.5941%2C26.9124%2C26.8467%2C13.0827%2C22.5726%2C19.076%2C20.2961%2C21.1702%2C23.2599%2C18.5204%2C17.6868%2C30.7333%2C30.901%2C31.634%2C30.211%2C31.326%2C30.3398%2C12.9716%2C9.9312%2C26.1445%2C31.1048&longitude=77.209%2C72.5714%2C79.0882%2C78.4867%2C85.1376%2C75.7873%2C80.9462%2C80.2707%2C88.3639%2C72.8777%2C85.8245%2C72.8311%2C77.4126%2C73.8567%2C83.2185%2C76.7794%2C75.8573%2C74.8723%2C74.9455%2C75.5762%2C76.3869%2C77.5946%2C76.2673%2C91.7362%2C77.1734&start_date=2024-01-01&end_date=2025-12-31&daily=temperature_2m_max%2Ctemperature_2m_min&models=era5&timezone=Asia%2FKolkata",
+  "sha256": "f01c07d5d3aad26c51044eb6ffc0eae44809085e4035fe01cc1dbdffd1ec7230",
+  "license": "CC BY 4.0",
+  "years": [
+    2024,
+    2025
+  ],
+  "cityCount": 25
+}
