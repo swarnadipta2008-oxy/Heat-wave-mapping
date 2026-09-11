@@ -93,3 +93,11 @@ main{animation:none}
 :root[data-theme="dark"] .map-bottom,:root[data-theme="dark"] .atlas-footnote{background:#183128ee;border-color:#294238;color:#b6c5b5}
 :root[data-theme="dark"] .action-banner{background:#203c2f;border-color:#3b5b47}:root[data-theme="dark"] .comparison-cards article,:root[data-theme="dark"] .forecast-days>div{background:#1d382d;border-color:#365347}
 :root[data-theme="dark"] .footer{border-color:#294238;color:#aebdaf}:root[data-theme="dark"] .definition-banner{background:#3a3022;border-color:#6a5437;color:#e6c58a}:root[data-theme="dark"] .formula-block{background:#193229;border-color:#365347;color:#bdcfbc}
+
+/* Tactile controls: motion is limited to interface buttons, never map markers. */
+.primary-button,.outline-button{border-radius:12px;transition:transform .2s cubic-bezier(.2,.8,.25,1),box-shadow .2s ease,background .2s ease,color .2s ease}.primary-button svg,.outline-button svg{transition:transform .2s cubic-bezier(.2,.8,.25,1)}
+.primary-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 9px 18px #173d2e2b}.primary-button:hover:not(:disabled) svg{transform:translateX(2px)}
+.outline-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 7px 16px #173d2e14;border-color:#a9c1aa}.outline-button:hover:not(:disabled) svg{transform:translateY(-1px)}
+.nav-item,.tier-filters button,.scenario-presets button,.city-chips button{border-radius:9px;transition:transform .18s cubic-bezier(.2,.8,.25,1),background .18s ease,border-color .18s ease,box-shadow .18s ease}.nav-item:hover,.tier-filters button:hover,.scenario-presets button:hover,.city-chips button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 5px 12px #173d2e12}
+.map-tools button{transition:transform .18s cubic-bezier(.2,.8,.25,1),background .18s ease}.map-tools button:hover{transform:scale(1.06)}
+@media(prefers-reduced-motion:reduce){.primary-button,.outline-button,.nav-item,.tier-filters button,.scenario-presets button,.city-chips button,.map-tools button{transition:none!important}.primary-button:hover,.outline-button:hover,.nav-item:hover,.tier-filters button:hover,.scenario-presets button:hover,.city-chips button:hover,.map-tools button:hover{transform:none!important;box-shadow:none!important}}
