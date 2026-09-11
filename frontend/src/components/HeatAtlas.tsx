@@ -6,14 +6,14 @@ import { scoreHeat, tierMeta, type City } from '@/lib/heatModel';
 
 type Props = { cities: City[]; selected: City | undefined; select: (id: string) => void; region: string };
 export default function HeatAtlas({ cities, selected, select, region }: Props) {
-  const [position, setPosition] = useState<{ coordinates: [number, number]; zoom: number }>({ coordinates: region === 'Punjab' ? [76, 31] : [82, 23], zoom: region === 'Punjab' ? 3.5 : 1 });
+  const [position, setPosition] = useState<{ coordinates: [number, number]; zoom: number }>({ coordinates: [82, 23], zoom: 1 });
   const [halos, setHalos] = useState(true);
   const geometry = useQuery({ queryKey: ['india-boundaries'], queryFn: async ({ signal }) => {
     const res = await fetch('/india-states.geojson', { signal });
     if (!res.ok) throw new Error('Map unavailable');
     return res.json();
   }, staleTime: Infinity, retry: 1 });
-  const reset = () => setPosition({ coordinates: region === 'Punjab' ? [76, 31] : [82, 23], zoom: region === 'Punjab' ? 3.5 : 1 });
+  const reset = () => setPosition({ coordinates: [82, 23], zoom: 1 });
   return <div className="map-canvas">
     <div className="map-label"><span className="eyebrow">INDIA / CITY OBSERVATIONS</span><span>{cities.length} locations in view</span></div>
     <div className="map-tools"><button aria-label="Zoom in" onClick={() => setPosition(p => ({ ...p, zoom: Math.min(6, p.zoom * 1.4) }))}><Plus size={17}/></button><button aria-label="Zoom out" onClick={() => setPosition(p => ({ ...p, zoom: Math.max(1, p.zoom / 1.4) }))}><Minus size={17}/></button><button aria-label="Reset map" onClick={reset}><RotateCcw size={15}/></button><button aria-label="Toggle marker halos" aria-pressed={halos} onClick={() => setHalos(v => !v)}><Layers size={16}/></button></div>
