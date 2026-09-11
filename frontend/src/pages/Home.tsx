@@ -47,7 +47,7 @@ export default function Home() {
   return <div className="app-shell">
     <a className="skip-link" href="#main-content">Skip to content</a>
     <aside className="sidebar"><a href="#" className="brand" onClick={e => { e.preventDefault(); go('atlas'); }}><span className="brand-mark"><Sun size={24}/></span><span>heatmap<span className="brand-country">INDIA</span></span></a>
-      <div className="sidebar-caption">THE CLIMATE OBSERVATORY</div><nav aria-label="Main navigation">{views.map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'nav-item active' : 'nav-item'} onClick={() => go(id)} aria-current={view === id ? 'page' : undefined}><Icon size={18}/>{label}{view === id && <span className="nav-dot"/>}</button>)}</nav>
+      <div className="sidebar-caption">THE CLIMATE OBSERVATORY</div><nav aria-label="Main navigation" className={`liquid-nav active-${views.findIndex(item => item.id === view)}`}>{views.map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'nav-item active' : 'nav-item'} onClick={() => go(id)} aria-current={view === id ? 'page' : undefined}><Icon size={18}/>{label}{view === id && <span className="nav-dot"/>}</button>)}</nav>
       <div className="sidebar-project"><div className="tiny-sun"><Compass size={25}/></div><h3>A small project.<br/>A shared future.</h3><p>Understanding heat is the first step toward more resilient cities.</p><button onClick={() => go('research')}>Explore the research <ArrowUpRight size={15}/></button></div>
       <div className="sidebar-footer"><span className="edition-dot"/> CHE110 · ENVIRONMENTAL STUDIES<small>Lovely Professional University<br/>Academic project · 2026</small></div>
     </aside>
